@@ -3,7 +3,7 @@ name: CLEAR OLD BRANCHES
 
 on:
   schedule:
-  - cron: "*/1 * * * *"
+  - cron: "15 21 * * 5"
 jobs:
   cron:
     name: Cleanup old branches
@@ -15,9 +15,9 @@ jobs:
         uses: beatlabs/delete-old-branches-action@v0.0.9
         with:
           repo_token: ${{ secrets.GH_TOKEN }}
-          date: '5 hours ago'
+          date: '2 minutes ago'
           dry_run: false
           delete_tags: false
           minimum_tags: 5
-          extra_protected_branch_regex: ^(main|dev|qa|uat|prod|release*)$
+          extra_protected_branch_regex: ^(main|dev|qa|uat|prod|^release.*|.*_p$)$
           exclude_open_pr_branches: true
