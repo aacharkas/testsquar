@@ -1,0 +1,13 @@
+FROM python:3.8.16-slim-bullseye
+
+WORKDIR /app
+
+RUN echo \
+"fire==0.5.0\n\
+boto3==1.26.52" >> requirements.txt
+
+COPY ./bin/algo_results_parsing.py /app/
+
+RUN pip install -r requirements.txt
+
+CMD ["sh", "-c", "python algo_results_parsing.py"]

@@ -1,0 +1,1471 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "__stage__",
+    "version": "2023-02-14 15:01:41UTC"
+  },
+  "servers": [
+    {
+      "url": "",
+      "variables": {
+        "basePath": {
+          "default": "__stage__"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/api/auth/sign-out": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/auth/sign-out"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-sign-out/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/sign-in": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/auth/sign-in"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-sign-in/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/sign-up": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/auth/sign-up"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-sign-up/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/verify-email": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /auth/verify-email"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-verify-email/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/resend-confirmation-email": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /auth/resend-confirmation-email"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-resend-confirmation-email/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/reset-password/send": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/auth/reset-password/send"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-reset-password-send/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/reset-password/recieve": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/auth/reset-password/recieve"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-reset-password-recieve/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/company": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/company/create"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api/company"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/company/invite": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/company/invite"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-invite/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/company/{id}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api/company/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-get/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "put": {
+        "responses": {
+          "default": {
+            "description": "Default response for PUT /api/company/update/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/company/{id}/status": {
+      "patch": {
+        "responses": {
+          "default": {
+            "description": "Default response for PATH /api/company/{id}/status"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-update-status/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/company/location": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/company/create-location"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-create-location/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/company/location/{id}": {
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "api/company/location/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-delete-location/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/company/location/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-get-location/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "put": {
+        "responses": {
+          "default": {
+            "description": "Default response for PUT /api/company-location/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-company-update-location/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/user": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api/user"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-user-get/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/user/{id}/status": {
+      "put": {
+        "responses": {
+          "default": {
+            "description": "Default response for PUT /api/user/{id}/status"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-user-status-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/user/{id}": {
+      "put": {
+        "responses": {
+          "default": {
+            "description": "Default response for PUT /api/user/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-user-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api/user/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-user-get-by-id/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "Default response for DELETE /api/user/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-user-delete/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/super-admin/list": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api/super-admin/list"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-super-admin-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/user/list": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api/user/list"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-user-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/user/change-password": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/user/change-password"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-user-change-password/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/invitation/send": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/invitation/send"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-invitation-send/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/invitation/recieve": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/invitation/recieve"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-invitation-recieve/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/swagger": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-swagger-get/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/file/upload-url/{type}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api/file/upload/{type}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-file-get-upload-url/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/file/get-pdf-files": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "Default response for GET /api/file/get-pdf-files"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "requestParameters": {
+            "append:header.Set-Cookie": "integration.response.header.Set-Cookie"
+          },
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-file-get-pdf-files/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/customer": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/customer"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-customer-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/customer/{id}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/customer/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-customer-get/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "api/customer/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-customer-delete/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "put": {
+        "responses": {
+          "default": {
+            "description": "api/customer/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-customer-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/customer/display-name/{displayName}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/customer/display-name/{displayName}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-customer-get-by-display-name/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/customer/list": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/customer/list"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-customer-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-carrier": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "Default response for POST /api/insurance-carrier"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-carrier-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-carrier/{id}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-carrier/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-carrier-get/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-carrier/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-carrier-remove/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "put": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-carrier/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-carrier-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-carrier/list": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-carrier/list"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-carrier-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-carrier/name/{name}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-carrier/name/{name}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-carrier-get-by-name/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/email-template": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "GET api/email-template"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-email-template-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "post": {
+        "responses": {
+          "default": {
+            "description": "GET api/email-template"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-email-template-upsert/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/email-template/{id}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "GET api/email-template/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-email-template-get/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/claim-item": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "GET api/claim-item"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-claim-item-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "post": {
+        "responses": {
+          "default": {
+            "description": "POST api/claim-item"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-claim-item-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/claim-item/{id}": {
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "DELETE api/claim-item/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-claim-item-remove/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "put": {
+        "responses": {
+          "default": {
+            "description": "PUT api/claim-item/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-claim-item-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/claim-item/{id}/approve": {
+      "patch": {
+        "responses": {
+          "default": {
+            "description": "PUT api/claim-item/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-claim-item-approve/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/unit-of-measurement": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/unit-of-measurement/list"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-unit-of-measurement-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/unit-of-measurement"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-unit-of-measurement-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/unit-of-measurement/{id}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/unit-of-measurement/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-unit-of-measurement-get/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "api/unit-of-measurement/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-unit-of-measurement-delete/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "put": {
+        "responses": {
+          "default": {
+            "description": "api/unit-of-measurement/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-unit-of-measurement-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/import": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/import"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-import/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/save": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/save"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-save/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{id}/validate": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/validate"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-validate/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/list"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{id}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-get/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "put": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{id}/status": {
+      "patch": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/{id}/status"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-update-status/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{id}/save-customer": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/{id}/save-customer"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-save-customer/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{scopeId}/insurance-carrier/{id}": {
+      "put": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/insurance-carrier/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-carrier-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{scopeId}/insurance-carrier/{carrierId}/adjuster": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/insurance-carrier/{carrierId}/adjuster"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-carrier-adjuster-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{scopeId}/insurance-carrier/{carrierId}/adjuster/{id}": {
+      "put": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/insurance-carrier/{carrierId}/adjuster/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-carrier-adjuster-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/insurance-carrier/{carrierId}/adjuster/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-carrier-adjuster-delete/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{scopeId}/customer/{id}": {
+      "put": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/customer/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-customer-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{scopeId}/groups": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/groups"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-group-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{scopeId}/groups/{id}": {
+      "put": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/groups/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-group-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/groups/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-group-delete/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{scopeId}/groups/{groupId}/items": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/groups/{groupId}/items"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-line-item-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/{scopeId}/groups/{groupId}/items/{id}": {
+      "put": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/groups/{groupId}/items/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-line-item-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "/api/insurance-scope/{scopeId}/groups/{groupId}/items/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-line-item-delete/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/validate-accuracy": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/validate-accuracy"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-validate-accuracy/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/insurance-scope/validate-accuracy-results": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/insurance-scope/validate-accuracy-results"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-insurance-scope-validate-accuracy-results/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/change-email": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/auth/change-email"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-change-email/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/verify-new-email": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/auth/verify-new-email"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-verify-new-email/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/auth/submit-change-email": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/auth/submit-change-email"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-auth-submit-change-email/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/job": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/job"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-job-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/job"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-job-list/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/job/{id}": {
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/job/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-job-get-by-id/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/job/{id}/status": {
+      "patch": {
+        "responses": {
+          "default": {
+            "description": "Endpoint to update job status"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-job-update-status/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/job/{id}/line-items": {
+      "put": {
+        "responses": {
+          "default": {
+            "description": "api/job/{id}/line-items"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-job-line-items-update/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/job/{id}/contract": {
+      "post": {
+        "responses": {
+          "default": {
+            "description": "api/job/{id}/contract"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-job-contract-create/invocations",
+          "connectionType": "INTERNET"
+        }
+      },
+      "get": {
+        "responses": {
+          "default": {
+            "description": "api/job/{id}/contract"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-job-contract-get-by-job-id/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    },
+    "/api/job-contract/{id}": {
+      "delete": {
+        "responses": {
+          "default": {
+            "description": "api/job-contract/{id}"
+          }
+        },
+        "x-amazon-apigateway-integration": {
+          "payloadFormatVersion": "1.0",
+          "type": "aws_proxy",
+          "httpMethod": "POST",
+          "uri": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:218855300330:function:__stage__-job-contract-delete/invocations",
+          "connectionType": "INTERNET"
+        }
+      }
+    }
+  },
+  "x-amazon-apigateway-cors": {
+    "allowMethods": [
+      "*"
+    ],
+    "allowHeaders": [
+      "*"
+    ],
+    "exposeHeaders": [
+      "*"
+    ],
+    "maxAge": 0,
+    "allowCredentials": false,
+    "allowOrigins": [
+      "*"
+    ]
+  },
+  "x-amazon-apigateway-importexport-version": "1.0"
+}

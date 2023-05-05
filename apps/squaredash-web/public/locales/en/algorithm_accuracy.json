@@ -1,0 +1,9 @@
+{
+  "check_algorithm": "Check algorithm",
+  "algorithm_accuracy_description": "Select documents to start checking the accuracy of the algorithm",
+  "start_checking": "Start checking",
+  "select_all": "Select all",
+  "clear_selection": "Clear selection",
+  "correct": "correct",
+  "average_correct": "Average {{percentage}}% correct"
+}

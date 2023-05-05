@@ -1,0 +1,81 @@
+name: Workflow on Pull Request to 'staging' branch
+
+on:
+  pull_request:
+    branches: ["staging"]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: squaredash-dev-registry
+  DOCKER_FILE_PATH: "./"
+  DOCKER_FILE: "./docker/Dockerfile.scope-processor-executor"
+  JOB_DEFINITION_TEMP: "./aws/templates/job_definition_template.json"
+  JOB_TEMP: "./aws/templates/job_template.json"
+  BATCH_TFSTATE: "s3://squaredash-terraform-state/batch.tfstate"
+  BUCKET: "dev-squaredash-data"
+  PATH_TO_S3_FILES: "resources"
+
+jobs:
+  testPR:
+    name: LoginWrapper PR to 'staging' branch
+    runs-on: ubuntu-22.04
+    env:
+      DOCKER_FILE_PATH_PYTHON: "./"
+      DOCKER_FILE_PYTHON: "./docker/Dockerfile.report-generator-executor"
+      DIR_ART: "result"
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Short sha
+        id: short-sha
+        run: echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+
+      - name: Create .env
+        run: |
+          echo "ADOBE_ACCOUNT_ID=${{ secrets.ADOBE_ACCOUNT_ID }}" > $DOCKER_FILE_PATH/.env
+          echo "ADOBE_CLIENT_ID=${{ secrets.ADOBE_CLIENT_ID }}" >> $DOCKER_FILE_PATH/.env
+          echo "ADOBE_CLIENT_SECRET=${{ secrets.ADOBE_CLIENT_SECRET }}" >> $DOCKER_FILE_PATH/.env
+          echo "ADOBE_ORG_ID=${{ secrets.ADOBE_ORG_ID }}" >> $DOCKER_FILE_PATH/.env
+          echo "${{ secrets.PRIVATE_KEYS }}" > $DOCKER_FILE_PATH/private.key
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: signup to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          SHORT_SHA: ${{ steps.short-sha.outputs.short_sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_SHA --file $DOCKER_FILE $DOCKER_FILE_PATH
+          docker run  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_SHA node dist/apps/scope-processor-executor/main.js run --bucketName=${BUCKET} --path=${PATH_TO_S3_FILES}
+
+      - name: Build, tag, push, image to Amazon ECR and run python container with test
+        id: python-container
+        continue-on-error: true
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          SHORT_SHA: ${{ steps.short-sha.outputs.short_sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:python_$SHORT_SHA --file $DOCKER_FILE_PYTHON $DOCKER_FILE_PATH_PYTHON
+          docker run -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID $ECR_REGISTRY/$ECR_REPOSITORY:python_$SHORT_SHA  python algo_results_parsing.py --path_to_save=${DIR_ART} --prefix=${PATH_TO_S3_FILES} --s3_bucket_name=${BUCKET}
+
+      - name: Get results from S3
+        run: |
+          aws s3 cp s3://$BUCKET/$DIR_ART ./$DIR_ART/ --recursive
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: |
+            ${{ env.DIR_ART }}/**

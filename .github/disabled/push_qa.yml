@@ -1,0 +1,45 @@
+name: Workflow deploy fronend
+on:
+  push:
+    branches: [ "qa"]
+    paths:
+      - 'apps/squaredash-web/*'
+      - 'apps/squaredash-web/**'
+      - 'libs/**'
+      - '.github/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  BUCKET: ${{ vars.S3_BUCKET_QA }}
+  SOURCE: "./dist/apps/squaredash-web/exported/"
+#  TEST_VARIABLE: "Hello World!"
+#  NX_API_URL: "https://swapi.dev/api/"
+
+jobs:
+  build_export_deploy_frontedn:
+    name: Bld. and Exp. frontend 
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build and export frontend
+        env: 
+          NX_GOOGLE_API_KEY: ${{ secrets.NX_GOOGLE_API_KEY }}
+          NX_API_URL: ${{ vars.NX_API_URL_QA }}
+
+        run: |
+          npm install
+          npx nx run squaredash-web:export --configuration=production
+      
+      - name: Deploy frontend to S3
+        run: | 
+          aws s3 sync $SOURCE s3://$BUCKET/ --delete

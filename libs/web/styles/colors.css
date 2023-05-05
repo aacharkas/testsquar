@@ -1,0 +1,87 @@
+:root {
+  /*primary*/
+  --primary-color-50: #DFE0FF;
+  --primary-color-100: #BBC3FF;
+  --primary-color-200: #98A5FF;
+  --primary-color-300: #7A89ED;
+  --primary-color-400: #606FD1;
+  --primary-color-500: #4755B6;
+  --primary-color-600: #303F9F;
+  --primary-color-700: #112286;
+  --primary-color-800: #000D5F;
+  --primary-color-900: #000743;
+
+  /*secondary*/
+  --secondary-color-50: #FFEEE1;
+  --secondary-color-100: #FFDDBE;
+  --secondary-color-200: #FFB570;
+  --secondary-color-300: #FF9800;
+  --secondary-color-400: #D27C00;
+  --secondary-color-500: #AE6600;
+  --secondary-color-600: #8B5000;
+  --secondary-color-700: #693C00;
+  --secondary-color-800: #4A2800;
+  --secondary-color-900: #2C1600;
+
+  /*error*/
+  --error-color-50: #FEF2F2;
+  --error-color-100: #FEE2E2;
+  --error-color-200: #FECACA;
+  --error-color-300: #FCA5A5;
+  --error-color-400: #F87171;
+  --error-color-500: #EF4444;
+  --error-color-600: #DC2626;
+  --error-color-700: #B91C1C;
+  --error-color-800: #991B1B;
+  --error-color-900: #7F1D1D;
+
+  /*gray*/
+  --gray-color-50: #F9FAFB;
+  --gray-color-100: #F3F4F6;
+  --gray-color-200: #E5E7EB;
+  --gray-color-300: #D1D5DB;
+  --gray-color-400: #9CA3AF;
+  --gray-color-500: #6B7280;
+  --gray-color-600: #4B5563;
+  --gray-color-700: #374151;
+  --gray-color-800: #1F2937;
+  --gray-color-900: #111827;
+
+  /*light theme*/
+  --light-primary: #303F9F;
+  --light-secondary: #FF9800;
+  --tint-blue: #EAF1FC;
+  --tint-red: #F7EDE6;
+  --tint-yellow: #FCF6E8;
+  --tint-green: #E8F4EA;
+  --black-text: #1B1923;
+  --light-grey-1: #787883;
+  --light-grey-2: #A6A6AE;
+  --light-grey-3: #E6E6E7;
+  --light-grey-4: #EEF0F3;
+  --light-background: #E0E2E8;
+
+  /*dark theme*/
+  --dark-primary: #6E79BC;
+  --dark-secondary: #FF9800;
+  --white-text: #FFFFFF;
+  --second-text: #B2B2B9;
+  --dark-grey-1: #1D1D27;
+  --dark-grey-2: #292937;
+  --dark-grey-3: #292937;
+  --dark-grey-4: #32323D;
+  --dark-background: #0F0F15;
+
+  /*color code*/
+  --yellow: #F8C511;
+  --dark-yellow: #E0A91C;
+  --green: #148C2E;
+  --red: #B71313;
+
+  /*color line measurement*/
+  --pastel-red: #DB8989;
+  --pastel-yellow: #FCE288;
+  --pastel-green: #8AC697;
+  --pastel-blue: #989FCF;
+  --pastel-purple: #B983DC;
+}

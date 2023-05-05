@@ -1,0 +1,196 @@
+name: CI
+
+on:
+  pull_request_target:
+    types:
+      - closed
+      - synchronize
+    branches:
+      - staging
+      - main
+  pull_request:
+    branches:
+      - staging
+      - main
+    types:
+      - synchronize
+  push:
+    branches:
+      - staging
+      - main
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: squaredash-dev-registry
+  DOCKER_FILE_PATH: "./"
+  DOCKER_FILE: "./docker/Dockerfile.scope-processor-executor"
+  JOB_DEFINITION_TEMP: "./aws/templates/job_definition_template.json"
+  JOB_TEMP: "./aws/templates/job_template.json"
+  BATCH_TFSTATE: "s3://squaredash-terraform-state/batch.tfstate"
+  BUCKET: "dev-squaredash-data"
+  PATH_TO_S3_FILE: "10545_Somerton_Dr_-_Insurance_Scope.pdf"
+
+permissions:
+  contents: read
+jobs:
+  testPrevPR:
+    name: LoginWrapper code dev prev pr to staging
+    if: github.event.action == 'opened' && github.event.pull_request.base.ref == 'staging' && github.event.pull_request.merged != true
+    runs-on: ubuntu-22.04
+    env:
+      DOCKER_FILE_PATH_PYTHON: "./"
+      DOCKER_FILE_PYTHON: "./docker/Dockerfile.report-generator-executor"
+      DIR_ART: "result"
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Short sha
+        id: short-sha
+        run: echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+
+      - name: Create .env
+        run: |
+          echo "ADOBE_ACCOUNT_ID=${{ secrets.ADOBE_ACCOUNT_ID }}" > $DOCKER_FILE_PATH/.env
+          echo "ADOBE_CLIENT_ID=${{ secrets.ADOBE_CLIENT_ID }}" >> $DOCKER_FILE_PATH/.env
+          echo "ADOBE_CLIENT_SECRET=${{ secrets.ADOBE_CLIENT_SECRET }}" >> $DOCKER_FILE_PATH/.env
+          echo "ADOBE_ORG_ID=${{ secrets.ADOBE_ORG_ID }}" >> $DOCKER_FILE_PATH/.env
+          echo "${{ secrets.PRIVATE_KEYS }}" > $DOCKER_FILE_PATH/private.key
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: signup to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          SHORT_SHA: ${{ steps.short-sha.outputs.short_sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_SHA --file $DOCKER_FILE $DOCKER_FILE_PATH
+
+      - name: Build, tag, push, image to Amazon ECR and run python container with test
+        id: python-container
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          SHORT_SHA: ${{ steps.short-sha.outputs.short_sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:python_$SHORT_SHA --file $DOCKER_FILE_PYTHON $DOCKER_FILE_PATH_PYTHON
+          docker run -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID $ECR_REGISTRY/$ECR_REPOSITORY:python_$SHORT_SHA  python algo_results_parsing.py DIR_ART
+          aws s3 cp s3://$BUCKET/DIR_ART ./DIR_ART/ --recursive
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: |
+            DIR_ART/**
+
+  testAfterMerge:
+    name: LoginWrapper code after merge to 'staging'
+    if: (github.event.pull_request.merged == true || github.event_name == 'push') && github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: test
+        run: echo "test staging"
+
+  buildAndDeployToStaging:
+    name: Build and deploy to 'staging' after merge
+    if: (github.event.pull_request.merged == true || github.event_name == 'push') && github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-22.04
+    needs: testAfterMerge
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Short sha
+        id: short-sha
+        run: echo "short_sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+
+      - name: Create .env
+        run: |
+          echo "ADOBE_ACCOUNT_ID=${{ secrets.ADOBE_ACCOUNT_ID }}" > $DOCKER_FILE_PATH/.env
+          echo "ADOBE_CLIENT_ID=${{ secrets.ADOBE_CLIENT_ID }}" >> $DOCKER_FILE_PATH/.env
+          echo "ADOBE_CLIENT_SECRET=${{ secrets.ADOBE_CLIENT_SECRET }}" >> $DOCKER_FILE_PATH/.env
+          echo "ADOBE_ORG_ID=${{ secrets.ADOBE_ORG_ID }}" >> $DOCKER_FILE_PATH/.env
+          echo "${{ secrets.PRIVATE_KEYS }}" > $DOCKER_FILE_PATH/private.key
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: signup to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          SHORT_SHA: ${{ steps.short-sha.outputs.short_sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_SHA --file $DOCKER_FILE $DOCKER_FILE_PATH
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_SHA
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_SHA" >> $GITHUB_OUTPUT
+
+      - name: Set name batch job definition
+        id: set-bach-name-job-definition
+        run: |
+          aws s3 cp $BATCH_TFSTATE batch.tfstate
+          echo "bach-name-job-definition=$(jq -r '.resources | .[] | select(.type == "aws_batch_job_definition").instances | .[].attributes.name' batch.tfstate)" >> $GITHUB_OUTPUT
+
+      - name: Fill in the new image ID in the AWS Batch job definition
+        id: task-def
+        env:
+          BATCH_JOB_DEFINITION: ${{ steps.set-bach-name-job-definition.outputs.bach-name-job-definition }}
+          IMAGE: ${{ steps.build-image.outputs.image }}
+        run: |
+          cat $JOB_DEFINITION_TEMP | sed -e "s#__image__#$IMAGE#" -e "s#__name__#$BATCH_JOB_DEFINITION#" -e "s#__bucket__#$BUCKET#" -e "s#__path_to_s3_file__#$PATH_TO_S3_FILE#" > job_definition.json
+
+      - name: Deploy AWS Batch job definition
+        id: deploy-job-def
+        run: |
+          aws batch register-job-definition --cli-input-json file://job_definition.json
+
+      - name: Set variables in the AWS Batch job
+        id: task-job
+        env:
+          BATCH_JOB_DEFINITION: ${{ steps.set-bach-name-job-definition.outputs.bach-name-job-definition }}
+          SHORT_SHA: ${{ steps.short-sha.outputs.short_sha }}
+        run: |
+          cat $JOB_TEMP | sed -e "s#__name_def__#$BATCH_JOB_DEFINITION#" -e "s#__name_job__#$BATCH_JOB_DEFINITION-$SHORT_SHA#" > job.json
+
+      - name: Deploy AWS Batch job
+        id: deploy-job
+        run: |
+          aws batch submit-job --cli-input-json file://job.json >> OUTPUT
+          echo "jobId=$(jq -r '.jobId' OUTPUT)"  >> $GITHUB_OUTPUT
+
+      - name: Check status AWS Batch job
+        id: check-job
+        env:
+          JOB_ID: ${{ steps.deploy-job.outputs.jobId }}
+        run: |
+          bash ./bin/check_status_job.sh $JOB_ID
+
+  buildAndDeployToProd:
+    name: Build and deploy to production after merge to 'main' branch
+    if: github.event.pull_request.merged == true && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: run
+        id: deploy-prod
+        run: echo "deploy prod"

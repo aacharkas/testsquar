@@ -1,0 +1,26 @@
+{
+  "name": "crud-customer-user",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/crud/customer-user/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/crud/customer-user",
+        "main": "libs/crud/customer-user/src/index.ts",
+        "tsConfig": "libs/crud/customer-user/tsconfig.lib.json",
+        "assets": ["libs/crud/customer-user/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/crud/customer-user/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

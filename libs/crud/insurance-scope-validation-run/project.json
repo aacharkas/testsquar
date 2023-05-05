@@ -1,0 +1,40 @@
+{
+  "name": "crud-insurance-scope-validation-run",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/crud/insurance-scope-validation-run/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/crud/insurance-scope-validation-run",
+        "main": "libs/crud/insurance-scope-validation-run/src/index.ts",
+        "tsConfig": "libs/crud/insurance-scope-validation-run/tsconfig.lib.json",
+        "assets": ["libs/crud/insurance-scope-validation-run/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/crud/insurance-scope-validation-run/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/crud/insurance-scope-validation-run/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

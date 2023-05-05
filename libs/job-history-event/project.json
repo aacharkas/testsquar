@@ -1,0 +1,26 @@
+{
+  "name": "job-history-event",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/job-history-event/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/job-history-event",
+        "main": "libs/job-history-event/src/index.ts",
+        "tsConfig": "libs/job-history-event/tsconfig.lib.json",
+        "assets": ["libs/job-history-event/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/job-history-event/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

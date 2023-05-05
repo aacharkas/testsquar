@@ -1,0 +1,26 @@
+{
+  "name": "crud-job-contract",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/crud/job-contract/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/crud/job-contract",
+        "main": "libs/crud/job-contract/src/index.ts",
+        "tsConfig": "libs/crud/job-contract/tsconfig.lib.json",
+        "assets": ["libs/crud/job-contract/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/crud/job-contract/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

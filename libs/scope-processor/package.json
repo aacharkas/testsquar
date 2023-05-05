@@ -1,0 +1,8 @@
+{
+  "name": "@squaredash/scope-processor",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "dependencies": {
+    "@squaredash/shared/models": "*"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "edit_location": "Edit location",
+  "add_location": "Add location",
+  "main_office": "Main office",
+  "office_name": "Office name",
+  "street_address": "Street address",
+  "contact_email": "Contact email",
+  "phone_number": "Phone number",
+  "zip_code": "Zip code",
+  "state": "State",
+  "city": "City",
+  "inactivate": "Inactivate",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "save": "Save",
+  "discard": "Discard",
+  "proceed": "Proceed",
+  "cannot_delete_main_location": "You cannot delete the main location. Please mark a different location as main first."
+}

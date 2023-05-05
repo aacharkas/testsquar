@@ -1,0 +1,45 @@
+name: Check build functions
+on:
+  push:
+    branches:
+      - 'devops/**'
+      - 'feature/**'
+      - 'release/**'
+#    branches-ignore: ["main","dev","staging","frontend"]
+#    paths:
+#      - 'apps/functions/*'
+#      - 'scripts'
+#      - '.github'
+
+env:
+  SRC: "scripts"
+
+
+jobs:
+  check_build_functions:
+    name: Check build functions 
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      
+      - name: Install dependenses
+        run: |
+          npm install
+      
+      - name: Generate prisma
+        run: |
+          npx prisma generate  
+                
+      - name: Build functions
+        run: |
+          bash ./$SRC/check_npx_nx_run.sh
+
+      - name: Install dependenses for functions
+        run: |
+          bash ./$SRC/npm_install_fun.sh

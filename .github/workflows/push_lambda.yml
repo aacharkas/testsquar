@@ -1,0 +1,387 @@
+name: Workflow deploy lambda and import api
+on:
+  create:
+  push:
+    branches: ["dev", "qa", "uat", "prod"]
+    paths:
+      - 'apps/functions/**'
+      - 'prisma/**'
+      - 'scripts/**'
+      - 'libs/**'
+      - '.github/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  BUCKET: ${{ vars.S3_BUCKET_LAMBDA }}
+  SRC: "scripts"
+  SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+  TESTING_RECIPIENT_EMAIL: ${{ vars.TESTING_RECIPIENT_EMAIL }}
+  ADOBE_ACCOUNT_ID: ${{ secrets.ADOBE_ACCOUNT_ID }}
+  ADOBE_CLIENT_ID: ${{ secrets.ADOBE_CLIENT_ID }}
+  ADOBE_CLIENT_SECRET: ${{ secrets.ADOBE_CLIENT_SECRET }}
+  ADOBE_ORG_ID: ${{ secrets.ADOBE_ORG_ID }}
+  PUSHER_APP_ID: ${{ secrets.PUSHER_APP_ID }}
+  PUSHER_CLUSTER: ${{ secrets.PUSHER_CLUSTER }}
+  PUSHER_KEY: ${{ secrets.PUSHER_KEY }}
+  PUSHER_SECRET: ${{ secrets.PUSHER_SECRET }}
+  GOOGLE_MAPS_API_KEY: ${{ vars.GOOGLE_MAPS_API_KEY }}
+
+jobs:
+  create_matrix_with_name_functions:
+    name: Create matrix, gen.&dep. prisma
+    outputs:
+      matrix: ${{ steps.listmatrix.outputs.matrix }}
+      state: ${{ steps.listmatrix.outputs.state }}
+      prisma_arn: ${{ steps.prisma_arn.outputs.prisma_arn }}
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/uat' || github.ref == 'refs/heads/prod'
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_DEV }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_DEV }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_DEV }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_DEV }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_DEV }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_DEV }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/qa' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_QA }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_QA }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_QA }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_QA }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_QA }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_QA }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_QA }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_QA }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/uat' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_UAT }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_UAT }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_UAT }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_UAT }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_UAT }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_UAT }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_PROD }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_PROD }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_PROD }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_PROD }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_PROD }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_PROD }}" >> "$GITHUB_ENV"
+          fi
+      - name: Set branch name
+        run: echo "STAGE=$(basename ${GITHUB_REF})" >> $GITHUB_ENV
+
+
+      - name: checkout source code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Compare file
+        id: compare_file
+        run: |
+          if ! diff <(git show HEAD:prisma/schema.prisma) <(git show HEAD~1:prisma/schema.prisma); then
+            echo "compare=true" >> $GITHUB_ENV
+          else 
+            echo "compare=false" >> $GITHUB_ENV
+          fi
+    
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: npm install
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: prepare node module for repo
+        run: |
+          npm install
+
+      - id: listmatrix
+        env:
+          after: ${{ github.event.after }}
+          before: ${{ github.event.before }}
+        run: |
+          if [[ $compare == 'true' ]]; then
+            bash ./$SRC/list_change_functions.sh
+          else 
+            bash ./$SRC/list_change_functions_affected.sh
+          if [[ ! -f functions ]]; then
+            echo "state=false" >> $GITHUB_OUTPUT
+          fi
+          fi
+            cat functions | jq --slurp --raw-input 'split("\n")[:-1]'  | jq  "{\"filepath\": .[] }" | jq -sc "{ \"include\": . }" > tmp
+            matrixStringifiedObject=$(cat ./tmp)
+            cat ./tmp
+            echo "matrix=$matrixStringifiedObject" >> $GITHUB_OUTPUT
+
+      - name: prisma generate
+        if: env.compare == 'true'
+        run: |
+          npx prisma generate
+
+      - name: Prepare "@prisma/client" lambda layer
+        if: env.compare == 'true'
+        run: |
+          bash ./$SRC/prepare-prisma-client-lambda-layer.sh $STAGE
+
+      - name: Upload prisma to s3
+        if: env.compare == 'true'
+        run: |
+          aws s3 cp $STAGE-lambda-layers-prisma-client s3://$BUCKET/$STAGE-lambda-layers-prisma-client --recursive  --exclude="*" --exclude="*/*/*" --include="*.zip"
+
+      - name: deploy prisma layers
+        id: prisma_arn
+        run: |
+          if [[ $compare == 'true' ]]; then
+            echo "deploy latest version Prisma"
+            PRISMA=$(aws lambda publish-layer-version \
+              --layer-name "$STAGE-prisma" \
+              --description "$STAGE-prisma" \
+              --content "S3Bucket=$BUCKET,S3Key=$STAGE-lambda-layers-prisma-client/nodejs.zip" \
+              --compatible-runtimes "nodejs12.x" "nodejs14.x" "nodejs16.x" "nodejs18.x" \
+              --query 'LayerVersionArn' --output text)
+            echo "gen $PRISMA"
+          else 
+            echo "get latest version Prisma"
+            PRISMA=$(aws lambda list-layers --query "Layers[?LayerName=='$STAGE-prisma'].LatestMatchingVersion.LayerVersionArn" --output text) || { echo "Error: Failed to get layer ARN" ; exit 1; }
+          fi
+            encrypted_PRISMA=$(gpg --symmetric --batch --passphrase "$AWS_SECRET_ACCESS_KEY" --output - <(echo "$PRISMA") | base64 -w0)
+            echo "prisma_arn=$encrypted_PRISMA" >> $GITHUB_OUTPUT
+
+  preparing_functions_and_deploy_layers:
+    name: gen. lambda & layer dep.layesr
+    needs: create_matrix_with_name_functions
+    if: (github.ref == 'refs/heads/dev' && needs.create_matrix_with_name_functions.outputs.state!='false') || (github.ref == 'refs/heads/qa' && needs.create_matrix_with_name_functions.outputs.state!='false') || (github.ref == 'refs/heads/uat' && needs.create_matrix_with_name_functions.outputs.state!='false') || (github.ref == 'refs/heads/prod' && needs.create_matrix_with_name_functions.outputs.state!='false')
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix: ${{fromJson(needs.create_matrix_with_name_functions.outputs.matrix)}}
+    env:
+      FILEPATH: ${{ matrix.filepath }}
+    steps:
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_DEV }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_DEV }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_DEV }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_DEV }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_DEV }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_DEV }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/qa' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_QA }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_QA }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_QA }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_QA }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_QA }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_QA }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_QA }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_QA }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/uat' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_UAT }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_UAT }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_UAT }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_UAT }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_UAT }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_UAT }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_PROD }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_PROD }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_PROD }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_PROD }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_PROD }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_PROD }}" >> "$GITHUB_ENV"
+          fi
+      - name: Set branch name
+        run: echo "STAGE=$(basename ${GITHUB_REF})" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: npm install
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: prepare node module for repo
+        run: |
+          npm install
+
+      - name: npx_nx_run
+        run: bash ./scripts/npx_nx_run.sh
+
+      - name: prepare node module for repo
+        run: |
+          npm install --prefix ./dist/apps/functions/$FILEPATH
+
+      - name: Prepare lambda layer
+        run: |
+          bash ./$SRC/prepare-node-modules-lambda-layer.sh $STAGE
+
+      - name: Upload node module for lambda to s3
+        run: |
+          aws s3 cp $STAGE-lambda-layers-node_modules s3://$BUCKET/$STAGE-lambda-layers-node_modules --recursive  --exclude="*" --exclude="*/*/*" --include="*.zip"
+
+      - name: deploy lambda layers
+        id: node_module_arn
+        run: |
+            echo "generate node_moddule"
+            node_module_arn=$(bash ./$SRC/deploy_lambda_layers.sh $STAGE)
+            encrypted_node_module_arn=$(gpg --symmetric --batch --passphrase "$AWS_SECRET_ACCESS_KEY" --output - <(echo "$node_module_arn") | base64 -w0)
+            echo "NODEMODULEARN=$encrypted_node_module_arn" >> $GITHUB_OUTPUT
+
+      - name: Prepare lambda
+        run: |
+          bash ./$SRC/prepare-lambda.sh $STAGE
+
+      - name: Upload lambda to s3
+        run: |
+          aws s3 cp $STAGE-lambda-functions s3://$BUCKET/$STAGE-lambda-functions --recursive  --exclude="*" --exclude="*/*/*" --include="*.zip"
+
+  deploy-lambdas-functions:
+    name: Deploy lambdas layers
+    if: (github.ref == 'refs/heads/dev' && needs.create_matrix_with_name_functions.outputs.state!='false') || (github.ref == 'refs/heads/qa' && needs.create_matrix_with_name_functions.outputs.state!='false') || (github.ref == 'refs/heads/uat' && needs.create_matrix_with_name_functions.outputs.state!='false') || (github.ref == 'refs/heads/prod' && needs.create_matrix_with_name_functions.outputs.state!='false')
+    needs:
+      [
+        create_matrix_with_name_functions,
+        preparing_functions_and_deploy_layers,
+      ]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix: ${{fromJson(needs.create_matrix_with_name_functions.outputs.matrix)}}
+      max-parallel: 10
+    env:
+      PRISMA: ${{ needs.create_matrix_with_name_functions.outputs.prisma_arn }}
+#      NODEMODULE: ${{ needs.preparing_functions_and_deploy_layers.outputs.node_module_arn }}
+      FILEPATH: ${{ matrix.filepath }}
+    steps:
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_DEV }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_DEV }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_DEV }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_DEV }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_DEV }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_DEV }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/qa' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_QA }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_QA }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_QA }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_QA }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_QA }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_QA }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_QA }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_QA }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/uat' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_UAT }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_UAT }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_UAT }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_UAT }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_UAT }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_UAT }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_PROD }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "ADOBE_PRIVATE_KEY=${{ secrets.ADOBE_PRIVATE_KEY }}" >> "$GITHUB_ENV"
+              echo "API_GW_DOMAIN_NAME=${{ vars.API_GW_DOMAIN_NAME_PROD }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_PROD }}" >> "$GITHUB_ENV"
+              echo "EMAIL_NOTIFICATION_TOPIC=${{ vars.EMAIL_NOTIFICATION_TOPIC_PROD }}" >> "$GITHUB_ENV"
+              echo "INSURANCE_SCOPE_SELF_VALIDATION_TOPIC=${{ vars.INSURANCE_SCOPE_SELF_VALIDATION_TOPIC_PROD }}" >> "$GITHUB_ENV"
+              echo "REDIS_HOST=${{ vars.REDIS_HOST_PROD }}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Set branch name
+        run: echo "STAGE=$(basename ${GITHUB_REF})" >> $GITHUB_ENV
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: deploy lambda layers
+        run: |
+          bash ./$SRC/deploy_lambda.sh $STAGE
+
+
+  deploy-api-gateway:
+    name: Deploy api gateway
+    if: (github.ref == 'refs/heads/dev'  && always()) || (github.ref == 'refs/heads/qa' && always()) || (github.ref == 'refs/heads/uat' && always()) || (github.ref == 'refs/heads/prod' && always())
+    needs:
+      [
+        create_matrix_with_name_functions,
+        preparing_functions_and_deploy_layers,
+        deploy-lambdas-functions
+      ]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set branch name
+        run: echo "STAGE=$(basename ${GITHUB_REF})" >> $GITHUB_ENV
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure definition to api
+        run: |
+          sed -e "s#__stage__#$STAGE#" ./$SRC/stage_definition.json >> ./$SRC/$STAGE_definition.json
+
+      - name: api deploy
+        run : |
+         aws apigatewayv2 reimport-api --api-id $(aws apigatewayv2 get-apis --query  Items[?Name==\`$STAGE\`].ApiId --output text) --body file://$SRC/$STAGE_definition.json

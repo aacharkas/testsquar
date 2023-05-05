@@ -1,0 +1,12 @@
+{
+  "email_templates": "Email templates",
+  "template_name": "Template name",
+  "subject": "Subject",
+  "preview": "Preview",
+  "document_link": "{{Document link}}",
+  "edit_email_template": "Edit email template",
+  "body": "Body",
+  "button_text": "Button text",
+  "back_to_default": "Back to default",
+  "insert_fields": "Insert fields"
+}

@@ -1,0 +1,11 @@
+.dark-theme {
+  background: var(--primary-color-600);
+}
+
+.dark-theme:hover, .dark-theme:focus {
+  background: var(--primary-color-700);
+}
+
+.light-theme:hover, .light-theme:focus {
+  background: var(--gray-color-50);
+}

@@ -1,0 +1,14 @@
+name: Workflow on Push to 'main' branch
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  buildAndDeployToProd:
+    name: Build and deploy to production after merge to 'main' branch
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: run
+        id: deploy-prod
+        run: echo "deploy prod"

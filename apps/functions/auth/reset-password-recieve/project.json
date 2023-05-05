@@ -1,0 +1,62 @@
+{
+  "name": "functions-auth-reset-password-recieve",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/functions/auth/reset-password-recieve/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/functions/auth/reset-password-recieve",
+        "main": "apps/functions/auth/reset-password-recieve/src/main.ts",
+        "tsConfig": "apps/functions/auth/reset-password-recieve/tsconfig.app.json",
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/functions/auth/reset-password-recieve/src/environments/environment.ts",
+              "with": "apps/functions/auth/reset-password-recieve/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "options": {
+        "buildTarget": "functions-auth-reset-password-recieve:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "functions-auth-reset-password-recieve:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "apps/functions/auth/reset-password-recieve/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/functions/auth/reset-password-recieve/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

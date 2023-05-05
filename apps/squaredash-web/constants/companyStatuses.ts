@@ -1,0 +1,5 @@
+export const COMPANY_STATUSES = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  INVITED: 'INVITED',
+};

@@ -1,0 +1,13 @@
+.profile-table-header {
+  background-color: var(--gray-color-50);
+}
+
+.company-logo {
+  border-color: var(--gray-color-300);
+}
+
+.company-no-logo {
+  border-color: var(--gray-color-300);
+  background-color: var(--gray-color-100);
+  background-image: url('../../../../../libs/web/assets/images/logo/company-background-logo.png');
+}

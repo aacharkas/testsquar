@@ -1,0 +1,64 @@
+.login-main {
+  flex: 1;
+}
+
+.login-image {
+  flex: 2.3;
+  background-color: var(--primary-color-700);
+  background-image: url('../../../../libs/web/assets/images/background.png');
+}
+
+.login-image-logo {
+  width: 310px;
+  height: 48px;
+  right: 96px;
+  bottom: 96px;
+  background-image: url('../../../../libs/web/assets/images/logo/LogoPrimaryWhite.png');
+}
+
+.signup-second-page-image {
+  background-image: url('../../../../libs/web/assets/images/Frame1.png');
+}
+
+.signup-company-error-image {
+  background-image: url('../../../../libs/web/assets/images/Error.png');
+}
+
+
+.login-title {
+  color: var(--primary-color-600);
+}
+
+@media (max-width: 1440px) {
+  .login-image {
+    flex: 1.5;
+  }
+
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+  }
+
+  .login-main {
+    flex: 3;
+  }
+
+  .login-image {
+    flex: 1;
+    background-image: url('../../../../libs/web/assets/images/background-768.png');
+  }
+
+  .login-image-logo {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+  }
+}
+
+@media (max-width: 380px) {
+  .login-image {
+    display: none;
+  }
+}

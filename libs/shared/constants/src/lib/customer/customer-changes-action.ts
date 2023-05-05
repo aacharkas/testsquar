@@ -1,0 +1,4 @@
+export enum CUSTOMER_CHANGE_ACTION {
+  DELETE = 'DELETE',
+  UPDATE = 'UPDATE',
+}

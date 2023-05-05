@@ -1,0 +1,8 @@
+{
+  "name": "@squaredash/user",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "dependencies": {
+    "@squaredash/shared/models": "*"
+  }
+}

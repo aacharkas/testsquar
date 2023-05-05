@@ -1,0 +1,26 @@
+{
+  "name": "shared-validators",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/validators/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared/validators",
+        "main": "libs/shared/validators/src/index.ts",
+        "tsConfig": "libs/shared/validators/tsconfig.lib.json",
+        "assets": ["libs/shared/validators/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/shared/validators/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

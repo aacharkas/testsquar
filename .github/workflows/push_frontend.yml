@@ -1,0 +1,66 @@
+name: Workflow deploy fronend
+on:
+  push:
+    branches: ["frontend","qa", "uat"]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+#  BUCKET: ${{ vars.S3_BUCKET }}
+  SOURCE: "./dist/apps/squaredash-web/exported/"
+  NX_PUSHER_PUBLIC_KEY: ${{ vars.NX_PUSHER_PUBLIC_KEY }}
+#  NX_ADOBE_CLIENT_ID: ${{ vars.NX_ADOBE_CLIENT_ID }}
+#  TEST_VARIABLE: "Hello World!"
+#  NX_API_URL: "https://swapi.dev/api/"
+
+jobs:
+  build_export_deploy_frontedn:
+    name: Bld. and Exp. frontend 
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/frontend' ]]; then
+              echo "BUCKET=${{ vars.S3_BUCKET}}" >> "$GITHUB_ENV"
+              echo "NX_API_URL=${{ vars.NX_API_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "NX_ALFA_VERSION=${{ vars.NX_ALFA_VERSION_DEV }}" >> "$GITHUB_ENV"
+              echo "NX_SENTRY_DSN=${{ vars.NX_SENTRY_DSN_FE }}" >> "$GITHUB_ENV"
+              echo "NX_PUSHER_API=${{ vars.NX_PUSHER_API_DEV }}" >> "$GITHUB_ENV"
+              echo "NX_ADOBE_CLIENT_ID=${{ vars.NX_ADOBE_CLIENT_ID_DEV }}" >> "$GITHUB_ENV"
+              echo "NX_API_GW_DOMAIN_NAME=${{ vars.NX_API_GW_DOMAIN_NAME_DEV }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/qa' ]]; then
+              echo "BUCKET=${{ vars.S3_BUCKET_QA}}" >> "$GITHUB_ENV"
+              echo "NX_API_URL=${{ vars.NX_API_URL_QA }}" >> "$GITHUB_ENV"
+              echo "NX_SENTRY_DSN=${{ vars.NX_SENTRY_DSN_FE }}" >> "$GITHUB_ENV"
+              echo "NX_ADOBE_CLIENT_ID=${{ vars.NX_ADOBE_CLIENT_ID_QA }}" >> "$GITHUB_ENV"
+              echo "NX_API_GW_DOMAIN_NAME=${{ vars.NX_API_GW_DOMAIN_NAME_QA }}" >> "$GITHUB_ENV"
+              echo "NX_PUSHER_API=${{ vars.NX_PUSHER_API_QA }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/uat' ]]; then
+              echo "BUCKET=${{ vars.S3_BUCKET_UAT}}" >> "$GITHUB_ENV"
+              echo "NX_API_URL=${{ vars.NX_API_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "NX_SENTRY_DSN=${{ vars.NX_SENTRY_DSN_FE }}" >> "$GITHUB_ENV"
+              echo "NX_PUSHER_API=${{ vars.NX_PUSHER_API_UAT }}" >> "$GITHUB_ENV"
+              echo "NX_ADOBE_CLIENT_ID=${{ vars.NX_ADOBE_CLIENT_ID_UAT }}" >> "$GITHUB_ENV"
+              echo "NX_API_GW_DOMAIN_NAME=${{ vars.NX_API_GW_DOMAIN_NAME_UAT }}" >> "$GITHUB_ENV"
+          fi
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build and export frontend
+        env: 
+          NX_GOOGLE_API_KEY: ${{ secrets.NX_GOOGLE_API_KEY }}
+
+        run: |
+          npm install
+          npx nx run squaredash-web:export --configuration=production
+      
+      - name: Deploy frontend to S3
+        run: | 
+          aws s3 sync $SOURCE s3://$BUCKET/ --delete

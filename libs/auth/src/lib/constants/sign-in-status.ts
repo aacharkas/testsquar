@@ -1,0 +1,4 @@
+export enum SIGN_IN_STATUS {
+  SUCCESSFUL = 'SUCCESSFUL',
+  FAILED = 'FAILED',
+}

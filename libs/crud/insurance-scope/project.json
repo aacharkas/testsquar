@@ -1,0 +1,26 @@
+{
+  "name": "crud-insurance-scope",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/crud/insurance-scope/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/crud/insurance-scope",
+        "main": "libs/crud/insurance-scope/src/index.ts",
+        "tsConfig": "libs/crud/insurance-scope/tsconfig.lib.json",
+        "assets": ["libs/crud/insurance-scope/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/crud/insurance-scope/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

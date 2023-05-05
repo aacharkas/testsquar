@@ -1,0 +1,26 @@
+{
+  "name": "crud-job-line-item",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/crud/job-line-item/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/crud/job-line-item",
+        "main": "libs/crud/job-line-item/src/index.ts",
+        "tsConfig": "libs/crud/job-line-item/tsconfig.lib.json",
+        "assets": ["libs/crud/job-line-item/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/crud/job-line-item/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

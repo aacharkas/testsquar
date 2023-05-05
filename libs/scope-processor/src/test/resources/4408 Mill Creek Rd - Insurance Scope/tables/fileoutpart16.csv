@@ -1,0 +1,6 @@
+﻿FENCE  
+DESCRIPTION  ,QUANTITY  ,UNIT PRICE  ,TAX  ,RCV  ,DEPREC.  ,ACV  
+23.  Clean with pressure/chemical spray  ,"1,920.00 SF  ",0.32  ,52.40  ,666.80  ,(0.00)  ,666.80  
+Pressure wash fence.  
+24.  Stain - wood fence/gate  ,"1,920.00 SF  ",0.86  ,33.26  ,"1,684.46  ",<224.59>  ,"1,459.87  "
+Totals:  FENCE  ,,,85.66  ,"2,351.26  ",224.59  ,"2,126.67  "

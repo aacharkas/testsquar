@@ -1,0 +1,15 @@
+{
+  "units_of_measurement": "Units of measurement",
+  "unit_name": "Unit name",
+  "abbreviation": "Abbreviation",
+  "add_unit": "Add new unit",
+  "no_units_of_measurement": "No units of measurement",
+  "search_by_unit_name": "Search by unit name",
+  "sort_by_name": "Sort by name",
+  "new_unit_of_measurement": "New unit of measurement",
+  "edit_unit_of_measurement": "Edit unit of measurement",
+  "delete_uom": "Delete this unit of measurement?",
+  "delete_uom_error_title": "Can't delete unit of measure",
+  "delete_uom_error_msg": "This unit of measurement is used in Claim items and cannot be deleted",
+  "delete_uom_success": "Units of measurement – {{name}} was deleted"
+}

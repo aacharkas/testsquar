@@ -1,0 +1,14 @@
+FROM node:16
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm ci
+
+RUN npx nx build scope-processor-executor
+
+ENV BUCKET_NAME bucket
+ENV FILE_NAME file
+
+CMD ["sh", "-c", "node dist/apps/scope-processor-executor/main.js run --bucketName=${BUCKET_NAME} --path=${FILE_NAME}"]

@@ -1,0 +1,15 @@
+{
+    "notes": "Notes",
+    "note_name": "Note name",
+    "add_note": "Add note",
+    "search": "Search",
+    "details":"Details",
+    "cancel":"Cancel",
+    "delete":"Delete",
+    "delete_note":"Delete this note?",
+    "edit":"Edit",
+    "new_note":"New note",
+    "edit_note":"Edit note",
+    "create":"Create",
+    "textarea_placeholder":"Enter note text"
+}

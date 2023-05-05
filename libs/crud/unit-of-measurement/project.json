@@ -1,0 +1,26 @@
+{
+  "name": "crud-unit-of-measurement",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/crud/unit-of-measurement/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/crud/unit-of-measurement",
+        "main": "libs/crud/unit-of-measurement/src/index.ts",
+        "tsConfig": "libs/crud/unit-of-measurement/tsconfig.lib.json",
+        "assets": ["libs/crud/unit-of-measurement/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/crud/unit-of-measurement/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

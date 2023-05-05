@@ -1,0 +1,37 @@
+{
+    "jobName": "__name_job__",
+    "jobDefinition": "arn:aws:batch:us-east-1:218855300330:job-definition/__name_def__",
+    "jobQueue": "arn:aws:batch:us-east-1:218855300330:job-queue/NormalPriorityFargate",
+    "dependsOn": [],
+    "arrayProperties": {},
+    "shareIdentifier": "A1",
+    "schedulingPriorityOverride": 1,
+    "retryStrategy": {
+      "attempts": 3,
+      "evaluateOnExit": [
+        {
+          "onExitCode": "0",
+          "action": "exit"
+        },
+        {
+          "onExitCode": "1",
+          "action": "retry"
+        }
+      ]
+    },
+    "timeout": {
+      "attemptDurationSeconds": 60
+    },
+    "parameters": {},
+    "containerOverrides": {
+      "command": [
+        "node",
+        "dist/apps/scope-processor-executor/main.js",
+        "run",
+        "--bucketName=__bucket__",
+        "--path=__path_to_s3_files__"
+      ],
+      "resourceRequirements": [],
+      "environment": []
+    }
+  }

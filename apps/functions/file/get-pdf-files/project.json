@@ -1,0 +1,60 @@
+{
+  "name": "functions-file-get-pdf-files",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/functions/file/get-pdf-files/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/functions/file/get-pdf-files",
+        "main": "apps/functions/file/get-pdf-files/src/main.ts",
+        "tsConfig": "apps/functions/file/get-pdf-files/tsconfig.app.json",
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/functions/file/get-pdf-files/src/environments/environment.ts",
+              "with": "apps/functions/file/get-pdf-files/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "options": {
+        "buildTarget": "functions-file-get-pdf-files:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "functions-file-get-pdf-files:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/functions/file/get-pdf-files/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/functions/file/get-pdf-files/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["s3"]
+}

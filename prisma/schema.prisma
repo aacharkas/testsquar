@@ -1,0 +1,1085 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "rhel-openssl-1.0.x"]
+  previewFeatures = ["clientExtensions", "views"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String?
+  name          String
+  phone         String?
+  birthDate     DateTime?
+  timezone      String      @default("CST")
+  tShirtSize    TShirtSize?
+  refreshTokens Token[]
+  role          UserRole
+  companyId     String?
+  addressId     String?
+  avatarId      String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  lockedAt  DateTime?
+
+  status     UserStatus @default(INACTIVE)
+  techStatus TechStatus @default(ACTIVE)
+
+  Address                    Address?             @relation(fields: [addressId], references: [id])
+  Company                    Company?             @relation(fields: [companyId], references: [id])
+  accountLockedLog           AccountLockedLog[]
+  signInLog                  SignInLog[]
+  customers                  CustomerUser[]
+  CustomerChangesLog         CustomerChangesLog[]
+  UserUpdateLog              UserChangeLog[]
+  CustomerDraft              CustomerDraft[]
+  changeEmailRequests        ChangeEmailRequest[] @relation("userChangeEmailRequests")
+  createdChangeEmailRequests ChangeEmailRequest[] @relation("userCreatedChangeEmailRequests")
+  jobHistoryEvents           JobHistoryEvent[]
+}
+
+model UserChangeLog {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdBy String
+  createdAt DateTime @default(now())
+  content   Json
+}
+
+model SignInLog {
+  id     String       @id @default(uuid())
+  user   User         @relation(fields: [userId], references: [id])
+  userId String
+  status SignInStatus @default(SUCCESSFUL)
+
+  createdAt DateTime @default(now())
+}
+
+model AccountLockedLog {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  createdAt DateTime @default(now())
+}
+
+// TODO: Replace string type for numberOfEmployees, numberOfInsuranceJobsPerMonth, comeFrom to enum.
+model Company {
+  id                            String        @id @default(uuid())
+  name                          String?       @db.VarChar(200)
+  legalName                     String?       @db.VarChar(200)
+  numberOfEmployees             String?       @db.VarChar(255)
+  numberOfInsuranceJobsPerMonth String?       @db.VarChar(255)
+  comeFrom                      String?       @db.VarChar(255)
+  createdAt                     DateTime      @default(now())
+  avatarId                      String?       @db.VarChar(255)
+  status                        CompanyStatus @default(INVITED)
+  techStatus                    TechStatus    @default(ACTIVE)
+
+  Invitations          Invitation[]
+  locations            CompanyLocation[]
+  users                User[]
+  Customer             Customer[]
+  companyEmailTemplate CompanyEmailTemplate[]
+  InsuranceScopeDrafts InsuranceScopeDraft[]
+  InsuranceScopes      InsuranceScope[]
+  InsuranceScopeView   InsuranceScopeView[]
+}
+
+model CompanyLocation {
+  id         String     @id @default(uuid())
+  name       String     @db.VarChar(200)
+  phone      String     @db.VarChar(255)
+  email      String
+  isMain     Boolean    @default(false)
+  companyId  String
+  addressId  String
+  techStatus TechStatus @default(ACTIVE)
+
+  address Address @relation(fields: [addressId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([companyId, addressId])
+}
+
+model Customer {
+  id                String       @id @default(uuid())
+  type              CustomerType @default(INDIVIDUAL)
+  firstName         String       @db.VarChar(100)
+  lastName          String       @db.VarChar(100)
+  displayName       String       @db.VarChar(200)
+  email             String
+  phone             String
+  companyId         String
+  company           Company      @relation(fields: [companyId], references: [id])
+  billingName       String
+  billingAddressId  String
+  billingAddress    Address      @relation(name: "customerBilling", fields: [billingAddressId], references: [id])
+  shippingName      String
+  shippingAddressId String
+  shippingAddress   Address      @relation(name: "customerShipping", fields: [shippingAddressId], references: [id])
+
+  parentId     String?
+  parent       Customer?  @relation(name: "subCustomers", fields: [parentId], references: [id])
+  subCustomers Customer[] @relation(name: "subCustomers")
+
+  responsibleMembers CustomerUser[]
+  notes              String?              @db.VarChar(4000)
+  techStatus         TechStatus           @default(ACTIVE)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  CustomerChangesLog CustomerChangesLog[]
+  customerDraft      CustomerDraft[]
+  insuranceScopes    InsuranceScope[]
+  CustomerView       CustomerView[]
+  JobCustomerInfo    JobCustomerInfo[]
+}
+
+model CustomerChangesLog {
+  id         String             @id @default(uuid())
+  user       User               @relation(fields: [userId], references: [id])
+  userId     String
+  customer   Customer           @relation(fields: [customerId], references: [id])
+  customerId String
+  type       CustomerChangeType @default(DELETE)
+  content    Json?
+
+  createdAt DateTime @default(now())
+}
+
+model CustomerUser {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, customerId])
+}
+
+model InsuranceCarrier {
+  id    String  @id @default(uuid())
+  name  String  @db.VarChar(200)
+  email String?
+  phone String?
+  fax   String?
+
+  addressId  String?
+  address    Address?   @relation(fields: [addressId], references: [id])
+  techStatus TechStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  adjusters               InsuranceCarrierAdjuster[]
+  insuranceScopes         InsuranceScope[]
+  insuranceCarrierDraft   InsuranceCarrierDraft[]
+  JobInsuranceCarrierInfo JobInsuranceCarrierInfo[]
+}
+
+model ClaimItem {
+  id          String          @id @default(uuid())
+  description String
+  source      ClaimItemSource
+  reviewed    Boolean         @default(false)
+
+  techStatus TechStatus @default(ACTIVE)
+
+  createdAt                   DateTime                      @default(now())
+  updatedAt                   DateTime                      @updatedAt
+  InsuranceScopeLineItemDraft InsuranceScopeLineItemDraft[]
+  InsuranceScopeLineItem      InsuranceScopeLineItem[]
+}
+
+model Address {
+  id               String  @id @default(uuid())
+  placeId          String  @db.VarChar(255)
+  country          String  @db.VarChar(255)
+  state            String  @db.VarChar(255)
+  city             String  @db.VarChar(255)
+  zipCode          String  @db.VarChar(255)
+  streetAddress1   String  @db.VarChar(255)
+  streetAddress2   String? @db.VarChar(255)
+  apartment        String? @db.VarChar(255)
+  formattedAddress String  @db.VarChar(255)
+  latitude         Float
+  longitude        Float
+
+  createdAt  DateTime   @default(now())
+  techStatus TechStatus @default(ACTIVE)
+
+  CompanyLocation CompanyLocation[]
+  User            User[]
+
+  CustomerShipping Customer[]         @relation("customerShipping")
+  CustomerBilling  Customer[]         @relation("customerBilling")
+  InsuranceCarrier InsuranceCarrier[]
+  JobCustomerInfo  JobCustomerInfo[]
+
+  @@unique([country, state, city, zipCode, streetAddress1, formattedAddress])
+}
+
+model Token {
+  id     String    @id @default(cuid())
+  token  String    @unique
+  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  type   TokenType
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([type, token])
+}
+
+model Invitation {
+  id        String             @id @default(uuid())
+  email     String             @unique
+  companyId String?
+  company   Company?           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  role      UserInvitationRole
+
+  createdAt DateTime @default(now())
+}
+
+model UnitOfMeasurement {
+  id           String     @id @default(uuid())
+  name         String
+  abbreviation String     @unique
+  techStatus   TechStatus @default(ACTIVE)
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  JobLineItem JobLineItem[]
+}
+
+model InsuranceScopeValidationRun {
+  id                    String   @id @default(uuid())
+  insuranceScopeDraftId String
+  notifications         Json
+  createdAt             DateTime @default(now())
+
+  insuranceScopeDraft InsuranceScopeDraft @relation(fields: [insuranceScopeDraftId], references: [id], onDelete: Cascade)
+}
+
+model InsuranceScope {
+  id                  String               @id @default(uuid())
+  claimNumber         String
+  typeOfLoss          String?
+  dateOfLoss          DateTime?
+  dateInspected       DateTime?
+  dateContacted       DateTime?
+  dateReceived        DateTime?
+  dateEntered         DateTime?
+  policyNumber        String?
+  priceList           String?
+  status              InsuranceScopeStatus
+  initialDocumentId   String
+  initialDocumentName String
+
+  totalLineItems                     Float
+  totalTax                           Float
+  totalRcv                           Float
+  totalAcv                           Float
+  totalOverhead                      Float
+  totalDepreciation                  Float
+  deductible                         Float
+  netClaimSum                        Float
+  totalRecoverableDepreciationSum    Float
+  totalNonRecoverableDepreciationSum Float
+  netClaimIfDepreciationIsRecovered  Float
+
+  groups InsuranceScopeGroup[]
+  items  InsuranceScopeLineItem[]
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  insuranceCarrierId String
+  insuranceCarrier   InsuranceCarrier @relation(fields: [insuranceCarrierId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  job       Job[]
+
+  versionId String
+}
+
+model JobVersionGroup {
+  id            String            @id @default(uuid())
+  jobVersions   Job[]
+  historyEvents JobHistoryEvent[]
+}
+
+model JobHistoryEvent {
+  id String @id @default(uuid())
+
+  type JobHistoryEventType
+  data Json?
+
+  createdAt DateTime @default(now())
+
+  createdBy     String
+  createdByUser User   @relation(fields: [createdBy], references: [id])
+
+  jobId String @unique
+  job   Job    @relation(fields: [jobId], references: [id])
+
+  versionGroupId String
+  versionGroup   JobVersionGroup @relation(fields: [versionGroupId], references: [id])
+}
+
+model Job {
+  id String @id @default(uuid())
+
+  claimNumber  String
+  typeOfLoss   String?
+  dateOfLoss   DateTime?
+  policyNumber String?
+  priceList    String?
+  status       JobStatus @default(CREATED)
+
+  insuranceScopeId String
+  insuranceScope   InsuranceScope @relation(fields: [insuranceScopeId], references: [id])
+
+  lineItems JobLineItem[]
+
+  contracts JobContract[]
+
+  versionId    String
+  versionGroup JobVersionGroup @relation(fields: [versionId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  techStatus    TechStatus       @default(ACTIVE)
+  versionStatus JobVersionStatus
+
+  insuranceCarrier JobInsuranceCarrierInfo?
+  adjusters        JobAdjusterInfo[]
+  groups           JobLineItemsGroupInfo[]
+  customer         JobCustomerInfo?
+  historyEvent     JobHistoryEvent?
+}
+
+model JobCustomerInfo {
+  id String @id @default(uuid())
+
+  propertyAddressId String
+  propertyAddress   Address @relation(fields: [propertyAddressId], references: [id])
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  jobId String @unique
+  job   Job    @relation(fields: [jobId], references: [id])
+}
+
+model JobInsuranceCarrierInfo {
+  id String @id @default(uuid())
+
+  insuranceCarrierId String
+  insuranceCarrier   InsuranceCarrier @relation(fields: [insuranceCarrierId], references: [id])
+  email              String?
+  phoneNumber        String?
+
+  adjusters JobAdjusterInfo[]
+
+  jobId String @unique
+  job   Job    @relation(fields: [jobId], references: [id])
+}
+
+model JobAdjusterInfo {
+  id String @id @default(uuid())
+
+  type        AdjusterType @default(CLAIM_REP)
+  name        String
+  email       String?
+  phoneNumber String?
+
+  jobInsuranceCarrierId String
+  jobInsuranceCarrier   JobInsuranceCarrierInfo @relation(fields: [jobInsuranceCarrierId], references: [id])
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id])
+}
+
+model JobLineItemsGroupInfo {
+  id String @id @default(uuid())
+
+  name                   String
+  notes                  String?
+  totalTax               Float
+  totalOverheadAndProfit Float
+  totalRCV               Float
+  totalACV               Float
+  totalDepreciationSum   Float
+
+  jobId     String
+  job       Job           @relation(fields: [jobId], references: [id])
+  lineItems JobLineItem[]
+
+  children JobLineItemsGroupInfo[] @relation(name: "childGroups")
+  parent   JobLineItemsGroupInfo?  @relation(name: "childGroups", fields: [parentId], references: [id])
+  parentId String?
+}
+
+model JobLineItem {
+  id String @id @default(uuid())
+
+  sequenceNumber            Int
+  description               String
+  notes                     String?
+  quantity                  Float
+  unitOfMeasurementId       String
+  unitPrice                 Float
+  tax                       Float
+  overheadAndProfit         Float
+  rcv                       Float
+  acv                       Float
+  depreciation              Float?
+  depreciationSum           Float
+  isDepreciationRecoverable Boolean
+
+  includedInJob Boolean @default(true)
+
+  groupId String
+  group   JobLineItemsGroupInfo @relation(fields: [groupId], references: [id])
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id])
+
+  unitOfMeasurement UnitOfMeasurement @relation(fields: [unitOfMeasurementId], references: [id])
+}
+
+model JobContract {
+  id String @id @default(uuid())
+
+  initialDocumentName String
+  fileId              String
+
+  techStatus TechStatus @default(ACTIVE)
+
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id])
+}
+
+model InsuranceScopeDraft {
+  id                  String               @id @default(uuid())
+  claimNumber         String?
+  typeOfLoss          String?
+  dateOfLoss          DateTime?
+  dateInspected       DateTime?
+  dateContacted       DateTime?
+  dateReceived        DateTime?
+  dateEntered         DateTime?
+  policyNumber        String?
+  priceList           String?
+  status              InsuranceScopeStatus @default(IMPORTED)
+  initialDocumentId   String
+  initialDocumentName String
+
+  totalLineItems                     Float?
+  totalTax                           Float?
+  totalRcv                           Float?
+  totalAcv                           Float?
+  totalOverhead                      Float?
+  totalDepreciation                  Float?
+  deductible                         Float?
+  netClaimSum                        Float?
+  totalRecoverableDepreciationSum    Float?
+  totalNonRecoverableDepreciationSum Float?
+  netClaimIfDepreciationIsRecovered  Float?
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  groups           InsuranceScopeGroupDraft[]
+  items            InsuranceScopeLineItemDraft[]
+  customer         CustomerDraft?
+  insuranceCarrier InsuranceCarrierDraft?
+
+  createdAt                   DateTime                      @default(now())
+  updatedAt                   DateTime                      @updatedAt
+  InsuranceScopeValidationRun InsuranceScopeValidationRun[]
+
+  versionId String
+}
+
+model CustomerDraft {
+  id              String       @id @default(uuid())
+  displayName     String?
+  type            CustomerType
+  firstName       String?
+  lastName        String?
+  email           String?
+  phone           String?
+  propertyAddress String?
+  shippingAddress String?
+
+  responsibleUser   User?   @relation(fields: [responsibleUserId], references: [id])
+  responsibleUserId String?
+
+  insuranceScopeDraftId String
+  insuranceScopeDraft   InsuranceScopeDraft @relation(fields: [insuranceScopeDraftId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([insuranceScopeDraftId])
+}
+
+model InsuranceCarrierAdjuster {
+  id      String       @id @default(uuid())
+  name    String
+  type    AdjusterType
+  phone   String?
+  email   String?
+  address String?
+
+  insuranceCarrierId String
+  insuranceCarrier   InsuranceCarrier @relation(fields: [insuranceCarrierId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InsuranceCarrierAdjusterDraft {
+  id      String       @id @default(uuid())
+  name    String?
+  type    AdjusterType
+  phone   String?
+  email   String?
+  address String?
+
+  insuranceCarrierDraftId String
+  insuranceCarrierDraft   InsuranceCarrierDraft @relation(fields: [insuranceCarrierDraftId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InsuranceCarrierDraft {
+  id      String  @id @default(uuid())
+  name    String?
+  email   String?
+  phone   String?
+  fax     String?
+  address String?
+
+  insuranceCarrierId String?
+  insuranceCarrier   InsuranceCarrier? @relation(fields: [insuranceCarrierId], references: [id])
+
+  insuranceScopeDraftId String
+  insuranceScopeDraft   InsuranceScopeDraft @relation(fields: [insuranceScopeDraftId], references: [id], onDelete: Cascade)
+
+  adjusters InsuranceCarrierAdjusterDraft[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([insuranceScopeDraftId])
+}
+
+model InsuranceScopeGroup {
+  id           String  @id @default(uuid())
+  name         String
+  notes        String?
+  totalTax     Float
+  totalRCV     Float
+  totalACV     Float
+  depreciation Float
+  overhead     Float
+
+  parentId    String?
+  parent      InsuranceScopeGroup?  @relation(name: "childGroups", fields: [parentId], references: [id])
+  childGroups InsuranceScopeGroup[] @relation(name: "childGroups")
+
+  insuranceScopeId String
+  insuranceScope   InsuranceScope @relation(fields: [insuranceScopeId], references: [id])
+
+  items InsuranceScopeLineItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InsuranceScopeGroupDraft {
+  id           String  @id @default(uuid())
+  name         String
+  notes        String?
+  totalTax     Float?
+  totalRCV     Float?
+  totalACV     Float?
+  depreciation Float?
+  overhead     Float   @default(0)
+
+  parentId    String?
+  parent      InsuranceScopeGroupDraft?  @relation(name: "childGroups", fields: [parentId], references: [id])
+  childGroups InsuranceScopeGroupDraft[] @relation(name: "childGroups")
+
+  insuranceScopeDraftId String
+  insuranceScopeDraft   InsuranceScopeDraft @relation(fields: [insuranceScopeDraftId], references: [id], onDelete: Cascade)
+
+  items InsuranceScopeLineItemDraft[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InsuranceScopeLineItem {
+  id                       String  @id @default(uuid())
+  sequence                 Int
+  description              String
+  notes                    String?
+  quantity                 Float
+  unitOfMeasurement        String
+  unitPrice                Float
+  tax                      Float
+  overhead                 Float
+  rcv                      Float
+  acv                      Float
+  ageLife                  String?
+  condition                String?
+  depreciationPercentage   Float?
+  depreciationSum          Float
+  isDepreciationRefundable Boolean
+
+  insuranceScopeGroupId String?
+  insuranceScopeGroup   InsuranceScopeGroup? @relation(fields: [insuranceScopeGroupId], references: [id])
+
+  insuranceScopeId String
+  insuranceScope   InsuranceScope @relation(fields: [insuranceScopeId], references: [id])
+
+  claimItem   ClaimItem @relation(fields: [claimItemId], references: [id])
+  claimItemId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InsuranceScopeLineItemDraft {
+  id                       String  @id @default(uuid())
+  sequence                 Int?
+  description              String
+  notes                    String?
+  quantity                 Float?
+  unitOfMeasurement        String?
+  unitPrice                Float?
+  tax                      Float?
+  overhead                 Float   @default(0)
+  rcv                      Float?
+  acv                      Float?
+  ageLife                  String?
+  condition                String?
+  depreciationPercentage   Float?
+  depreciationSum          Float?
+  isDepreciationRefundable Boolean @default(true)
+
+  insuranceScopeGroupDraftId String?
+  insuranceScopeGroupDraft   InsuranceScopeGroupDraft? @relation(fields: [insuranceScopeGroupDraftId], references: [id], onDelete: Cascade)
+
+  insuranceScopeDraftId String
+  insuranceScopeDraft   InsuranceScopeDraft @relation(fields: [insuranceScopeDraftId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  claimItem   ClaimItem? @relation(fields: [claimItemId], references: [id])
+  claimItemId String?
+}
+
+model EmailTemplate {
+  id String @id @default(uuid())
+
+  templateId        String
+  name              String
+  defaultSubject    String
+  defaultBody       String
+  defaultButtonText String?
+  customFields      Json
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  techStatus TechStatus @default(ACTIVE)
+
+  companyEmailTemplate CompanyEmailTemplate[]
+}
+
+model CompanyEmailTemplate {
+  id String @id @default(uuid())
+
+  companyId        String
+  emailTemplateId  String
+  customBody       String?
+  customSubject    String?
+  customButtonText String?
+
+  createdBy String
+  updatedBy String
+
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  techStatus TechStatus @default(ACTIVE)
+
+  company       Company       @relation(fields: [companyId], references: [id])
+  emailTemplate EmailTemplate @relation(fields: [emailTemplateId], references: [id])
+}
+
+model ChangeEmailRequest {
+  id String @id @default(uuid())
+
+  newEmail    String
+  userId      String
+  createdById String
+  createdAt   DateTime                 @default(now())
+  validUntil  DateTime
+  status      ChangeEmailRequestStatus @default(ACTIVE)
+  techStatus  TechStatus               @default(ACTIVE)
+
+  createdBy User @relation("userCreatedChangeEmailRequests", fields: [createdById], references: [id])
+  user      User @relation("userChangeEmailRequests", fields: [userId], references: [id])
+}
+
+model AccuracyCheckRun {
+  id String @id @default(uuid())
+
+  startedAt  DateTime           @default(now())
+  finishedAt DateTime?
+  documents  DocumentAccuracy[]
+}
+
+model DocumentAccuracy {
+  id       String           @id @default(uuid())
+  name     String
+  accuracy Float?
+  runId    String
+  run      AccuracyCheckRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+}
+
+view InsuranceScopeListItem {
+  id                   String               @id
+  dateOfLoss           DateTime?
+  claimNumber          String?
+  totalRcv             Float?
+  deductible           Float?
+  status               InsuranceScopeStatus
+  customerName         String?
+  propertyAddress      String?
+  insuranceCarrierName String?
+  customerId           String?
+  responsibleUserIds   String[]
+  companyId            String
+  companyName          String
+  insuranceCarrierId   String
+
+  createdAt DateTime
+  updatedAt DateTime
+}
+
+view JobListItem {
+  id                   String   @id
+  customerName         String
+  propertyAddress      String
+  insuranceCarrierName String
+  claimNumber          String
+  dateOfLoss           DateTime
+
+  dueBalance       Float
+  loanBalance      Float
+  sumPaid          Float
+  deductible       Float
+  availableAdvance Float
+
+  status             JobStatus
+  customerId         String
+  responsibleUserIds String[]
+  companyId          String
+  insuranceCarrierId String
+
+  versionId String
+  createdAt DateTime
+}
+
+view InsuranceScopeView {
+  id                                 String                       @id
+  claimNumber                        String?
+  typeOfLoss                         String?
+  dateOfLoss                         DateTime?
+  dateInspected                      DateTime?
+  dateContacted                      DateTime?
+  dateReceived                       DateTime?
+  dateEntered                        DateTime?
+  policyNumber                       String?
+  priceList                          String?
+  status                             InsuranceScopeStatus
+  initialDocumentId                  String
+  initialDocumentName                String
+  totalLineItems                     Float?
+  totalTax                           Float?
+  totalRcv                           Float?
+  totalAcv                           Float?
+  totalOverhead                      Float?
+  totalDepreciation                  Float?
+  deductible                         Float?
+  netClaimSum                        Float?
+  totalRecoverableDepreciationSum    Float?
+  totalNonRecoverableDepreciationSum Float?
+  netClaimIfDepreciationIsRecovered  Float?
+  companyId                          String
+  company                            Company                      @relation(fields: [companyId], references: [id])
+  customerId                         String
+  customer                           CustomerView                 @relation(fields: [customerId], references: [id])
+  insuranceCarrierId                 String
+  insuranceCarrier                   InsuranceCarrierView         @relation(fields: [insuranceCarrierId], references: [id])
+  groups                             InsuranceScopeGroupView[]
+  items                              InsuranceScopeLineItemView[]
+  createdAt                          DateTime
+  updatedAt                          DateTime
+  versionId                          String
+}
+
+view CustomerView {
+  id                  String               @id
+  displayName         String?
+  type                CustomerType
+  firstName           String?
+  lastName            String?
+  email               String?
+  phone               String?
+  propertyAddress     String?
+  shippingAddress     String?
+  responsibleUserIds  String[]
+  insuranceScopeViews InsuranceScopeView[]
+  customerId          String?
+  customer            Customer?            @relation(fields: [customerId], references: [id])
+  createdAt           DateTime
+  updatedAt           DateTime
+}
+
+view InsuranceCarrierAdjusterView {
+  id                     String               @id
+  name                   String?
+  type                   AdjusterType
+  phone                  String?
+  email                  String?
+  address                String?
+  insuranceCarrierViewId String
+  insuranceCarrierView   InsuranceCarrierView @relation(fields: [insuranceCarrierViewId], references: [id])
+  createdAt              DateTime
+  updatedAt              DateTime
+}
+
+view InsuranceCarrierView {
+  id                  String                         @id
+  name                String?
+  email               String?
+  phone               String?
+  fax                 String?
+  address             String?
+  insuranceCarrierId  String?
+  insuranceScopeViews InsuranceScopeView[]
+  adjusters           InsuranceCarrierAdjusterView[]
+  createdAt           DateTime
+  updatedAt           DateTime
+}
+
+view InsuranceScopeGroupView {
+  id                   String                       @id
+  name                 String
+  notes                String?
+  totalTax             Float?
+  totalRCV             Float?
+  totalACV             Float?
+  depreciation         Float?
+  overhead             Float?
+  parentId             String?
+  parent               InsuranceScopeGroupView?     @relation(name: "childGroups", fields: [parentId], references: [id])
+  childGroups          InsuranceScopeGroupView[]    @relation(name: "childGroups")
+  insuranceScopeViewId String
+  insuranceScopeView   InsuranceScopeView           @relation(fields: [insuranceScopeViewId], references: [id])
+  items                InsuranceScopeLineItemView[]
+  createdAt            DateTime
+  updatedAt            DateTime
+}
+
+view InsuranceScopeLineItemView {
+  id                        String                   @id
+  sequence                  Int
+  description               String
+  notes                     String?
+  quantity                  Float?
+  unitOfMeasurement         String?
+  unitPrice                 Float?
+  tax                       Float?
+  overhead                  Float?
+  rcv                       Float?
+  acv                       Float?
+  ageLife                   String?
+  condition                 String?
+  depreciationPercentage    Float?
+  depreciationSum           Float?
+  isDepreciationRefundable  Boolean
+  insuranceScopeGroupViewId String?
+  insuranceScopeGroupView   InsuranceScopeGroupView? @relation(fields: [insuranceScopeGroupViewId], references: [id])
+  insuranceScopeViewId      String
+  insuranceScopeView        InsuranceScopeView       @relation(fields: [insuranceScopeViewId], references: [id])
+  claimItemId               String?
+  createdAt                 DateTime
+  updatedAt                 DateTime
+}
+
+enum TShirtSize {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+  XXXL
+}
+
+enum SignInStatus {
+  SUCCESSFUL @map("SUCCESSFUL")
+  FAILED     @map("FAILED")
+}
+
+enum CustomerChangeType {
+  DELETE @map("DELETE")
+  UPDATE @map("UPDATE")
+}
+
+enum UserStatus {
+  INACTIVE  @map("INACTIVE")
+  ACTIVE    @map("ACTIVE")
+  SUSPENDED @map("SUSPENDED")
+}
+
+enum CompanyStatus {
+  INVITED  @map("INVITED")
+  INACTIVE @map("INACTIVE")
+  ACTIVE   @map("ACTIVE")
+}
+
+enum TechStatus {
+  INACTIVE @map("INACTIVE")
+  ACTIVE   @map("ACTIVE")
+  DELETED  @map("DELETED")
+}
+
+enum UserRole {
+  SUPER_ADMIN   @map("SUPER_ADMIN")
+  INITIAL_ADMIN @map("INITIAL_ADMIN")
+  COMPANY_ADMIN @map("COMPANY_ADMIN")
+  COMPANY_OWNER @map("COMPANY_OWNER")
+  COMPANY_USER  @map("COMPANY_USER")
+}
+
+enum UserInvitationRole {
+  COMPANY_ADMIN @map("COMPANY_ADMIN")
+  COMPANY_USER  @map("COMPANY_USER")
+  SUPER_ADMIN   @map("SUPER_ADMIN")
+  COMPANY_OWNER @map("COMPANY_OWNER")
+}
+
+enum ComeFrom {
+  ADVERTISEMENT              @map("Advertisement")
+  EVENT                      @map("Event")
+  GOOGLE_OR_OTHER_WEB_SEARCH @map("Google or other web search")
+  LINKED_IN                  @map("LinkedIn")
+  FACEBOOK                   @map("Facebook")
+  INSTAGRAM                  @map("Instagram")
+  KNOW_A_STAFF_MEMBER        @map("Know a staff member")
+  FROM_COLLEAGUES            @map("From colleagues")
+  OTHER                      @map("Other")
+}
+
+enum TokenType {
+  REFRESH
+  CONFIRMATION
+  RESET_PASSWORD
+}
+
+enum CustomerType {
+  INDIVIDUAL @map("INDIVIDUAL")
+  BUSINESS   @map("BUSINESS")
+}
+
+enum ClaimItemSource {
+  XACTIMATE @map("Xactimate")
+  SYMBILITY @map("Symbility")
+  OTHER     @map("Other")
+}
+
+enum InsuranceScopeStatus {
+  IMPORTED    @map("IMPORTED")
+  VERIFIED    @map("VERIFIED")
+  JOB_CREATED @map("JOB_CREATED")
+}
+
+enum ChangeEmailRequestStatus {
+  ACTIVE    @map("ACTIVE")
+  USED      @map("USED")
+  COMPLETED @map("COMPLETED")
+  CANCELLED @map("CANCELLED")
+  TIMED_OUT @map("TIMED_OUT")
+}
+
+enum JobStatus {
+  CREATED
+  PAYMENT_SCHEDULE_SENT
+  PAYMENT_SCHEDULE_APPROVED
+  PAYMENT_SCHEDULE_DECLINED
+  CHANGED
+  DEDUCTABLE_PAID
+  PENDING_COMPLETION
+  UPDATE_REQUIRED
+  UPDATED
+  COMPLETED
+  PENDING_APPROVAL
+  APPROVED
+  JOB_DECLINED
+  REVIEWED
+  COC_SENT
+  PAID
+}
+
+enum AdjusterType {
+  ESTIMATOR @map("Estimator")
+  CLAIM_REP @map("Claim Representative")
+}
+
+enum JobHistoryEventType {
+  JOB_CREATED                  @map("JOB_CREATED")
+  JOB_UPDATED                  @map("JOB_UPDATED")
+  NEW_INSURANCE_SCOPE_UPLOADED @map("NEW_INSURANCE_SCOPE_UPLOADED")
+  INSURANCE_SCOPE_UPDATED      @map("INSURANCE_SCOPE_UPDATED")
+  STATUS_UPDATED               @map("STATUS_UPDATED")
+  COC_CREATED                  @map("COC_CREATED")
+  ROUF_CREATED                 @map("ROUF_CREATED")
+  PAYMENT_SCHEDULE_SENT        @map("PAYMENT_SCHEDULE_SENT")
+  PAYMENT_REMINDER_SENT        @map("PAYMENT_REMINDER_SENT")
+  COC_SENT                     @map("COC_SENT")
+  ROUF_SENT                    @map("ROUF_SENT")
+}
+
+enum JobVersionStatus {
+  PENDING   @map("PENDING")
+  SUBMITTED @map("SUBMITTED")
+}

@@ -1,0 +1,112 @@
+@import url('../../styles/fonts.css');
+
+.typography {
+  font-family: "SilkaBlack", Arial, sans-serif;
+  font-weight: 400;
+}
+
+.typography_xs {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.typography_sm {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.typography_base {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.typography_lg {
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.typography_xl {
+  font-size: 20px;
+  line-height: 30px;
+}
+
+.typography_xl2 {
+  font-size: 24px;
+  line-height: 36px;
+}
+
+.typography_xl3 {
+  font-size: 30px;
+  line-height: 46px;
+}
+
+.typography_xl4 {
+  font-size: 36px;
+  line-height: 54px;
+}
+
+.typography_xl5 {
+  font-size: 48px;
+  line-height: 72px;
+}
+
+.typography_xl6 {
+  font-size: 64px;
+  line-height: 96px;
+}
+
+/*modification*/
+.typography_uppercase {
+  text-transform: uppercase;
+}
+
+.typography_underline {
+  text-decoration: underline;
+}
+
+.typography_bold {
+  font-family: "SilkaBold", Arial, sans-serif;
+  font-weight: 700;
+}
+
+.typography_medium {
+  font-family: "SilkaMedium", Arial, sans-serif;
+  font-weight: 500;
+}
+
+.typography_regular {
+  font-weight: 400;
+}
+
+.typography_italic {
+  font-style: italic;
+}
+
+.typography_hidden {
+  display: none;
+}
+
+/*colors*/
+.typography_black {
+  color: var(--black-text);
+}
+
+.typography_primary {
+  color: var(--primary-color-600);
+}
+
+.typography_secondary {
+  color: var(--secondary-color-300);
+}
+
+.typography_error {
+  color: var(--error-color-600);
+}
+
+.typography_gray {
+  color: var(--gray-color-500);
+}
+
+.typography_white {
+  color: var(--white-text);
+}

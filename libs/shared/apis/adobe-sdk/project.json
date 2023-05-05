@@ -1,0 +1,35 @@
+{
+  "name": "shared-apis-adobe-sdk",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/apis/adobe-sdk/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared/apis/adobe-sdk",
+        "main": "libs/shared/apis/adobe-sdk/src/index.ts",
+        "tsConfig": "libs/shared/apis/adobe-sdk/tsconfig.lib.json",
+        "assets": ["libs/shared/apis/adobe-sdk/*.md"],
+        "generatePackageJson": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/shared/adobe-sdk/apis/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/shared/adobe-sdk/apis/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": ["pdf"]
+}

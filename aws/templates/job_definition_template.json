@@ -1,0 +1,69 @@
+{
+    "type": "container",
+    "containerProperties": {
+      "image": "__image__",
+      "command": [
+        "node",
+        "dist/apps/scope-processor-executor/main.js",
+        "run",
+        "--bucketName=__bucket__",
+        "--path=__path_to_s3_files__"
+      ],
+      "resourceRequirements": [
+        {
+          "type": "VCPU",
+          "value": "0.25"
+        },
+        {
+          "type": "MEMORY",
+          "value": "2048"
+        }
+      ],
+      "fargatePlatformConfiguration": {
+        "platformVersion": "LATEST"
+      },
+      "networkConfiguration": {},
+      "executionRoleArn": "arn:aws:iam::218855300330:role/batch-squaredash-ecs-task-exec",
+      "jobRoleArn": "arn:aws:iam::218855300330:role/batch-squaredash-ecs-task-exec",
+      "environment": [],
+      "secrets": [],
+      "linuxParameters": {},
+      "mountPoints": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/aws/batch/__name__",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "__name__"
+      },
+        "secretOptions": []
+      }
+    },
+    "platformCapabilities": [
+      "FARGATE"
+    ],
+    "jobDefinitionName": "__name__",
+    "timeout": {
+      "attemptDurationSeconds": 60
+    },
+    "tags": {
+      "Repository": "https://github.com/terraform-aws-modules/terraform-aws-batch",
+      "JobDefinition": "batch-squaredash-JobDefinition",
+      "Example": "__name__",
+      "Name": "__name__"
+    },
+    "retryStrategy": {
+      "attempts": 3,
+      "evaluateOnExit": [
+          {
+              "onExitCode": "0",
+              "action": "exit"
+          },
+          {
+              "onExitCode": "1",
+              "action": "retry"
+          }
+      ]
+    },
+    "parameters": {}
+  }

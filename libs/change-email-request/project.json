@@ -1,0 +1,26 @@
+{
+  "name": "change-email-request",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/change-email-request/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/change-email-request",
+        "main": "libs/change-email-request/src/index.ts",
+        "tsConfig": "libs/change-email-request/tsconfig.lib.json",
+        "assets": ["libs/change-email-request/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/change-email-request/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

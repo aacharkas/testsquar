@@ -1,0 +1,309 @@
+name: Workflow deploy lambda and import api
+on:
+  push:
+    max-parallel: 1
+    branches: ["dev"]
+    paths:
+      - "apps/functions/**"
+      - "prisma/**"
+      - "scripts/**"
+      - "libs/**"
+      - ".github/**"
+
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  BUCKET: ${{ vars.S3_BUCKET_LAMBDA }}
+  SRC: "scripts"
+  SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+  TESTING_RECIPIENT_EMAIL: ${{ vars.TESTING_RECIPIENT_EMAIL }}
+
+jobs:
+  create_matrix_with_name_functions:
+    name: Create matrix, gen.&dep. prisma
+    if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/qa' || github.ref == 'refs/heads/uat' || github.ref == 'refs/heads/prod'
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.listmatrix.outputs.matrix }}
+    steps:
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_DEV }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_DEV }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/qa' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_QA }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_QA }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_QA }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/uat' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_UAT }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_UAT }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_PROD }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_PROD }}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Set branch name
+        run: echo "STAGE=$(basename ${GITHUB_REF})" >> $GITHUB_ENV
+
+      - name: checkout source code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: npm install
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: cache-root-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Cache prisma
+        id: cache-prisma
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STAGE }}-lambda-layers-prisma-client
+          key: cache-prisma-modules-${{ hashFiles('prisma/schema.prisma') }}
+
+      - name: prepare node module for repo
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+
+      - id: listmatrix
+        run: |
+          bash ./$SRC/list_change_functions.sh
+          cat functions | jq --slurp --raw-input 'split("\n")[:-1]' | jq  "{\"filepath\": .[] }" | jq -sc "{ \"include\": . }" > tmp
+          matrixStringifiedObject=$(cat ./tmp)
+          cat functions
+          cat ./tmp
+          echo "matrix=$matrixStringifiedObject" >> $GITHUB_OUTPUT
+
+      - name: prisma generate
+        if: steps.cache-prisma.outputs.cache-hit != 'true'
+        run: |
+          npx prisma generate
+
+      - name: Prepare "@prisma/client" lambda layer
+        if: steps.cache-prisma.outputs.cache-hit != 'true'
+        run: |
+          bash ./$SRC/prepare-prisma-client-lambda-layer.sh $STAGE
+
+      - name: Upload prisma to s3
+        if: steps.cache-prisma.outputs.cache-hit != 'true'
+        run: |
+          aws s3 cp $STAGE-lambda-layers-prisma-client s3://$BUCKET/$STAGE-lambda-layers-prisma-client --recursive  --exclude="*" --exclude="*/*/*" --include="*.zip"
+
+      - name: deploy prisma layers
+        if: steps.cache-prisma.outputs.cache-hit != 'true'
+        run: |
+          aws lambda publish-layer-version \
+            --layer-name "$STAGE-prisma" \
+            --description "$STAGE-prisma" \
+            --content S3Bucket=$BUCKET,S3Key=$STAGE-lambda-layers-prisma-client/nodejs.zip \
+            --compatible-runtimes nodejs12.x nodejs14.x nodejs16.x  nodejs18.x
+
+  preparing_functions_and_deploy_layers:
+    name: gen.lambda & layer dep.layesrs
+    needs: create_matrix_with_name_functions
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix: ${{fromJson(needs.create_matrix_with_name_functions.outputs.matrix)}}
+    env:
+      FILEPATH: ${{ matrix.filepath }}
+    steps:
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_DEV }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_DEV }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/qa' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_QA }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_QA }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_QA }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/uat' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_UAT }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_UAT }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_PROD }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_PROD }}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Set branch name
+        run: echo "STAGE=$(basename ${GITHUB_REF})" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: npm install
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Cache node modules
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: cache-root-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: prepare node module for repo
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          npm install
+
+      - name: npx_nx_run
+        run: bash ./scripts/npx_nx_run.sh
+
+      - name: Cache node module for lambda
+        id: cache_lambda_layer
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STAGE }}-lambda-layers-node_modules
+          key: cache-function-node-modules-${{ env.FILEPATH }}-${{ hashFiles('./dist/apps/functions/**/package-lock.json') }}
+
+      - run: |
+          echo "cache-lambda-layer=${{ steps.cache_lambda_layer.outputs.cache-hit }}" >> $GITHUB_OUTPUT
+
+      - name: prepare node module for repo
+        if: steps.cache_lambda_layer.outputs.cache-hit != 'true'
+        run: |
+          npm install --prefix ./dist/apps/functions/$FILEPATH
+
+      - name: Prepare lambda layer
+        if: steps.cache_lambda_layer.outputs.cache-hit != 'true'
+        run: |
+          bash ./$SRC/prepare-node-modules-lambda-layer.sh $STAGE
+
+      - name: Upload node module for lambda to s3
+        if: steps.cache_lambda_layer.outputs.cache-hit != 'true'
+        run: |
+          aws s3 cp $STAGE-lambda-layers-node_modules s3://$BUCKET/$STAGE-lambda-layers-node_modules --recursive  --exclude="*" --exclude="*/*/*" --include="*.zip"
+
+      - name: deploy lambda layers
+        if: steps.cache_lambda_layer.outputs.cache-hit != 'true'
+        run: |
+          bash ./$SRC/deploy_lambda_layers.sh $STAGE
+
+      - name: Prepare lambda
+        run: |
+          bash ./$SRC/prepare-lambda.sh $STAGE
+
+      - name: Upload lambda to s3
+        run: |
+          aws s3 cp $STAGE-lambda-functions s3://$BUCKET/$STAGE-lambda-functions --recursive  --exclude="*" --exclude="*/*/*" --include="*.zip"
+
+  deploy-lambdas-functions:
+    name: Deploy lambdas layers
+    needs:
+      [create_matrix_with_name_functions, preparing_functions_and_deploy_layers]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix: ${{fromJson(needs.create_matrix_with_name_functions.outputs.matrix)}}
+    env:
+      FILEPATH: ${{ matrix.filepath }}
+    steps:
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_DEV }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_DEV }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_DEV }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/qa' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_QA }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_QA }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_QA }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_QA }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/uat' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_UAT }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_UAT }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_UAT }}" >> "$GITHUB_ENV"
+          elif [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
+              echo "DATABASE_URL=${{ secrets.DATABASE_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "NODE_ENV=${{ vars.NODE_ENV_PROD }}" >> "$GITHUB_ENV"
+              echo "APP_URL=${{ vars.APP_URL_PROD }}" >> "$GITHUB_ENV"
+              echo "PUBLIC_BUCKET=${{ vars.PUBLIC_BUCKET_PROD }}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Set branch name
+        run: echo "STAGE=$(basename ${GITHUB_REF})" >> $GITHUB_ENV
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+
+      - name: deploy lambda layers
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_seconds: 5
+          command: |
+            bash ./$SRC/deploy_lambda.sh $STAGE
+
+  deploy-api-gateway:
+    name: Deploy api gateway
+    needs:
+      [
+        create_matrix_with_name_functions,
+        preparing_functions_and_deploy_layers,
+        deploy-lambdas-functions,
+      ]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Set branch name
+        run: echo "STAGE=$(basename ${GITHUB_REF})" >> $GITHUB_ENV
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure definition to api
+        run: |
+          sed -e "s#__stage__#$STAGE#" ./$SRC/stage_definition.json >> ./$SRC/$STAGE_definition.json
+
+      - name: api deploy
+        run: |
+          aws apigatewayv2 reimport-api --api-id $(aws apigatewayv2 get-apis --query  Items[?Name==\`$STAGE\`].ApiId --output text) --body file://$SRC/$STAGE_definition.json

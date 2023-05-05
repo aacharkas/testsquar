@@ -1,0 +1,10 @@
+﻿CONTINUED -Dwelling Roof  
+Description  ,Quantity  ,Unit Price  ,RCV  ,Depreciation  ,ACV  
+14. Remove Additional charge    DWELLING  -  ROO. SQ+ROOF5. SQ+F46SQ+ROO F16.  SQ+ROOFll.  SQ+ROOF2. SQ+ROOF18. SQ+ROOF7. SQ+ROOF3. SQ+ROOF15. SQ+ROOF4. SQ+ROOF12. SQ+ROOF17. SQ+ROOF6.SQ  ,for steep roof  -10/12  59.24 SQ    ,-12/12 slope  17.58   ,"1,041.44  ",(0.00)  ,"1,041.44  "
+15. Additional charge for steep    DWELLING  -  ROO. SQ+ROOF5. SQ+F46SQ+ROO F16.  SQ+ROOFll.  SQ+ROOF2. SQ+ROOF18. SQ+ROOF7. SQ+ROOF3. SQ+ROOF15. SQ+ROOF4. SQ+ROOF12. SQ+ROOF17. SQ+ROOF6.SQ  ,roof 12/12  -10/12 - 59.24 SQ    ,slope  60.58   ,"3,588.76  ",(0.00)  ,"3,588.76  "
+16. Remove Additional charge for steep roof -7/12 to 9/12 slope  
+ROOF14. SQ+ROOF13. SQ+ROOF8. SQ+ROOF9.SQ  ,0.95 SQ  ,11.18  ,10.62  ,(0.00)  ,10.62  
+17. Additional charge for steep    ROOF14. SQ+ROOF13. SQ+ROOF8. SQ+ROOF9.SQ  ,roof  -7/12 to 9/12  0.95 SQ    ,slope  38.55   ,36.62  ,(0.00)  ,36.62  
+18. Remove Additional charge for high roof (2 stories or greater)  
+ROOF15. SQ+ROOF12. SQ  ,2.55 SQ  ,4.23  ,10.79  ,(0.00)  ,10.79  
+19. Additional charge for high    ROOF15. SQ+ROOF12. SQ  ,roof (2 stories or  2.55 SQ    ,greater)  17.03   ,43.43  ,(0.00)  ,43.43  

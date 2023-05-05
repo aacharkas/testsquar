@@ -1,0 +1,224 @@
+// restruct get structure to form structure
+import {
+  IMPORT_DETAILS_FIELDS,
+  IMPORT_VALIDATION_FIELDS,
+  SELF_VALIDATION_SCHEMA,
+  VALIDATION_FIELDS_TO_DATA_FIELDS,
+  VALIDATION_TO_LOCALE,
+} from '../ImportDetails.constants';
+import {
+  TImportDetails,
+  TImportDetailsCustomerData,
+  TImportDetailsData,
+  TImportDetailsInsuranceCarrierData,
+} from '../ImportDetails.types';
+
+export const formatGetData = (
+  importData: TImportDetails
+): TImportDetailsData => {
+  const groups = importData?.[IMPORT_DETAILS_FIELDS.GROUPS] ?? {};
+
+  return {
+    [IMPORT_DETAILS_FIELDS.ID]: importData?.[IMPORT_DETAILS_FIELDS.ID],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_NAME]:
+      importData?.[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER]?.[
+        IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_NAME
+      ],
+    [IMPORT_DETAILS_FIELDS.CLAIM_NUMBER]:
+      importData?.[IMPORT_DETAILS_FIELDS.CLAIM_NUMBER],
+    [IMPORT_DETAILS_FIELDS.STATUS]: importData?.[IMPORT_DETAILS_FIELDS.STATUS],
+    [IMPORT_DETAILS_FIELDS.TYPE_OF_LOSS]:
+      importData?.[IMPORT_DETAILS_FIELDS.TYPE_OF_LOSS],
+    [IMPORT_DETAILS_FIELDS.DATE_OF_LOSS]:
+      importData?.[IMPORT_DETAILS_FIELDS.DATE_OF_LOSS],
+    [IMPORT_DETAILS_FIELDS.DATE_INSPECTED]:
+      importData?.[IMPORT_DETAILS_FIELDS.DATE_INSPECTED],
+    [IMPORT_DETAILS_FIELDS.DATE_CONTACTED]:
+      importData?.[IMPORT_DETAILS_FIELDS.DATE_CONTACTED],
+    [IMPORT_DETAILS_FIELDS.DATE_RECEIVED]:
+      importData?.[IMPORT_DETAILS_FIELDS.DATE_RECEIVED],
+    [IMPORT_DETAILS_FIELDS.DATE_ENTERED]:
+      importData?.[IMPORT_DETAILS_FIELDS.DATE_ENTERED],
+    [IMPORT_DETAILS_FIELDS.POLICY_NUMBER]:
+      importData?.[IMPORT_DETAILS_FIELDS.POLICY_NUMBER],
+    [IMPORT_DETAILS_FIELDS.PRICE_LIST]:
+      importData?.[IMPORT_DETAILS_FIELDS.PRICE_LIST],
+    [IMPORT_DETAILS_FIELDS.INITIAL_DOCUMENT_ID]:
+      importData?.[IMPORT_DETAILS_FIELDS.INITIAL_DOCUMENT_ID],
+    [IMPORT_DETAILS_FIELDS.INITIAL_DOCUMENT_LINK]:
+      importData?.[IMPORT_DETAILS_FIELDS.INITIAL_DOCUMENT_LINK],
+    [IMPORT_DETAILS_FIELDS.INITIAL_DOCUMENT_NAME]:
+      importData?.[IMPORT_DETAILS_FIELDS.INITIAL_DOCUMENT_NAME],
+    [IMPORT_DETAILS_FIELDS.TOTAL]: importData?.[IMPORT_DETAILS_FIELDS.TOTAL],
+    [IMPORT_DETAILS_FIELDS.TOTAL_RCV]:
+      importData?.[IMPORT_DETAILS_FIELDS.TOTAL_RCV],
+    [IMPORT_DETAILS_FIELDS.TOTAL_OVERHEAD]:
+      importData?.[IMPORT_DETAILS_FIELDS.TOTAL_OVERHEAD],
+    [IMPORT_DETAILS_FIELDS.TOTAL_TAX]:
+      importData?.[IMPORT_DETAILS_FIELDS.TOTAL_TAX],
+    [IMPORT_DETAILS_FIELDS.TOTAL_DEPRECIATION]:
+      importData?.[IMPORT_DETAILS_FIELDS.TOTAL_DEPRECIATION],
+    [IMPORT_DETAILS_FIELDS.DEDUCTIBLE]:
+      importData?.[IMPORT_DETAILS_FIELDS.DEDUCTIBLE],
+    [IMPORT_DETAILS_FIELDS.TOTAL_ACV]:
+      importData?.[IMPORT_DETAILS_FIELDS.TOTAL_ACV],
+    [IMPORT_DETAILS_FIELDS.TOTAL_LINE_ITEMS]:
+      importData?.[IMPORT_DETAILS_FIELDS.TOTAL_LINE_ITEMS],
+    [IMPORT_DETAILS_FIELDS.NET_CLAIM_SUM]:
+      importData?.[IMPORT_DETAILS_FIELDS.NET_CLAIM_SUM],
+    [IMPORT_DETAILS_FIELDS.NET_CLAIM_IF_DEPRECIATION_IS_RECOVERED]:
+      importData?.[
+        IMPORT_DETAILS_FIELDS.NET_CLAIM_IF_DEPRECIATION_IS_RECOVERED
+      ],
+    [IMPORT_DETAILS_FIELDS.TOTAL_RECOVERABLE_DEPRECIATION_SUM]:
+      importData?.[IMPORT_DETAILS_FIELDS.TOTAL_RECOVERABLE_DEPRECIATION_SUM],
+    [IMPORT_DETAILS_FIELDS.TOTAL_NON_RECOVERABLE_DEPRECIATION_SUM]:
+      importData?.[
+        IMPORT_DETAILS_FIELDS.TOTAL_NON_RECOVERABLE_DEPRECIATION_SUM
+      ],
+    [IMPORT_DETAILS_FIELDS.CREATED_AT]:
+      importData?.[IMPORT_DETAILS_FIELDS.CREATED_AT],
+    [IMPORT_DETAILS_FIELDS.UPDATED_AT]:
+      importData?.[IMPORT_DETAILS_FIELDS.UPDATED_AT],
+
+    // groups
+    [IMPORT_DETAILS_FIELDS.GROUPS]: importData?.[IMPORT_DETAILS_FIELDS.GROUPS],
+  };
+};
+
+export const formatGetCustomerData = (
+  importData: TImportDetails
+): TImportDetailsCustomerData => {
+  const isSavedCustomer =
+    importData?.[IMPORT_DETAILS_FIELDS.CUSTOMER]?.[
+      IMPORT_DETAILS_FIELDS.SAVED_CUSTOMER
+    ];
+  const customer = isSavedCustomer
+    ? importData?.[IMPORT_DETAILS_FIELDS.CUSTOMER]?.[
+        IMPORT_DETAILS_FIELDS.SAVED_CUSTOMER
+      ] ?? {}
+    : importData?.[IMPORT_DETAILS_FIELDS.CUSTOMER] ?? {};
+  return {
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_ID]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_ID],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_DISPLAY_NAME]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_DISPLAY_NAME],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_TYPE]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_TYPE],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_FIRST_NAME]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_FIRST_NAME],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_LAST_NAME]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_LAST_NAME],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_PHONE]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_PHONE],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_EMAIL]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_EMAIL],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_PROPERTY_ADDRESS]: isSavedCustomer
+      ? customer[IMPORT_DETAILS_FIELDS.CUSTOMER_BILLING_ADDRESS]?.[
+          IMPORT_DETAILS_FIELDS.FORMATTED_ADDRESS
+        ]
+      : customer[IMPORT_DETAILS_FIELDS.CUSTOMER_PROPERTY_ADDRESS],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_SHIPPING_ADDRESS]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_SHIPPING_ADDRESS]?.[
+        IMPORT_DETAILS_FIELDS.FORMATTED_ADDRESS
+      ],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_CREATED_AT]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_CREATED_AT],
+    [IMPORT_DETAILS_FIELDS.CUSTOMER_UPDATED_AT]:
+      customer[IMPORT_DETAILS_FIELDS.CUSTOMER_UPDATED_AT],
+  };
+};
+
+export const formatGetInsuranceCarrierData = (
+  importData: TImportDetails
+): TImportDetailsInsuranceCarrierData => {
+  const insuranceCarrier =
+    importData?.[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER] ?? {};
+
+  return {
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_ID]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_ID],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_NAME]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_NAME],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_EMAIL]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_EMAIL],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_PHONE]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_PHONE],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_FAX]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_FAX],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_ADDRESS]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_ADDRESS],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_CARRIER_ID]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_CARRIER_ID],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_CREATED_AT]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_CREATED_AT],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_UPDATED_AT]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_UPDATED_AT],
+    [IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_ADJUSTERS]:
+      insuranceCarrier[IMPORT_DETAILS_FIELDS.INSURANCE_CARRIER_ADJUSTERS],
+  };
+};
+
+export const formatGetValidationData = (data, existingValidations) => {
+  if (Array.isArray(data)) {
+    if (data[0] && data[0]?.notifications?.length) {
+      const validations = data[0]?.notifications;
+      return validations
+        .filter((item) => item.code !== 'success')
+        .map((validObj) => ({
+          [SELF_VALIDATION_SCHEMA.CODE]: validObj[SELF_VALIDATION_SCHEMA.CODE],
+          [SELF_VALIDATION_SCHEMA.TYPE]: validObj[SELF_VALIDATION_SCHEMA.TYPE],
+          [SELF_VALIDATION_SCHEMA.PROPERTY]:
+            validObj[SELF_VALIDATION_SCHEMA.PROPERTY],
+          [SELF_VALIDATION_SCHEMA.ID]: validObj[SELF_VALIDATION_SCHEMA.ID],
+        }));
+    } else {
+      return [];
+    }
+  } else {
+    const notification = data?.notification;
+    if (notification.code === 'success') {
+      return existingValidations.filter(
+        (item) =>
+          !(
+            item.property === notification.property &&
+            item.id === notification.id
+          )
+      );
+    }
+    const newValidationItem = {
+      [SELF_VALIDATION_SCHEMA.CODE]: notification[SELF_VALIDATION_SCHEMA.CODE],
+      [SELF_VALIDATION_SCHEMA.TYPE]: notification[SELF_VALIDATION_SCHEMA.TYPE],
+      [SELF_VALIDATION_SCHEMA.PROPERTY]:
+        notification[SELF_VALIDATION_SCHEMA.PROPERTY],
+      [SELF_VALIDATION_SCHEMA.ID]: notification[SELF_VALIDATION_SCHEMA.ID],
+    };
+    return [...existingValidations, newValidationItem];
+  }
+};
+
+export const checkIfAnyValidationErrors = (validationData) => {
+  return validationData.some(
+    (dataItem) => dataItem[SELF_VALIDATION_SCHEMA.TYPE] === 'error'
+  );
+};
+
+export const checkCustomerNotFound = (validationData) => {
+  return validationData.some(
+    (dataItem) => dataItem[SELF_VALIDATION_SCHEMA.CODE] === 'IM0063'
+  );
+};
+
+export const getCustomerDataMismatches = (validationData) => {
+  const mismatches = validationData.filter((dataItem) =>
+    ['IM0064', 'IM0070'].includes(dataItem[SELF_VALIDATION_SCHEMA.CODE])
+  );
+
+  if (mismatches.length) {
+    return mismatches.map((item) => ({
+      field: VALIDATION_FIELDS_TO_DATA_FIELDS[item.property],
+      localeKey: VALIDATION_TO_LOCALE[item.property],
+    }));
+  }
+  return [];
+};

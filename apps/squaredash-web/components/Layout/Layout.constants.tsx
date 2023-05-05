@@ -1,0 +1,145 @@
+import {
+  BuildingOffice2Icon,
+  CalendarDaysIcon,
+  CheckCircleIcon,
+  ClipboardDocumentCheckIcon,
+  ClipboardDocumentListIcon,
+  Cog8ToothIcon,
+  DocumentTextIcon,
+  HomeIcon,
+  ScaleIcon,
+  ShieldCheckIcon,
+  UserGroupIcon,
+  UsersIcon,
+} from '@heroicons/react/24/outline';
+
+import { LAYOUT_ELEMENT_TYPE } from '../../../../libs/web/components/SideMenu/SideMenu';
+import { PERMISSIONS } from '../../constants/permissions';
+import { ROUTES } from '../../constants/routes';
+
+export const APPLICATION_MENU = [
+  {
+    id: '1',
+    name: 'Dashboard',
+    icon: HomeIcon,
+    href: `/${ROUTES.DASHBOARD}`,
+    type: PERMISSIONS.DASHBOARD,
+  },
+  {
+    id: '2',
+    name: 'Admins',
+    icon: UsersIcon,
+    href: `/${ROUTES.ADMINS}`,
+    type: PERMISSIONS.SUPER_ADMIN_LIST,
+  },
+  {
+    id: '3',
+    name: 'Claim items',
+    icon: ClipboardDocumentListIcon,
+    href: `/${ROUTES.CLAIM_ITEMS}`,
+    type: PERMISSIONS.CLAIM_ITEMS,
+  },
+  {
+    id: '4',
+    name: 'Units of measurement',
+    icon: ScaleIcon,
+    href: `/${ROUTES.UOM}`,
+    type: PERMISSIONS.MEASUREMENT_UNITS,
+  },
+  {
+    id: '5',
+    name: 'Companies',
+    icon: BuildingOffice2Icon,
+    href: `/${ROUTES.COMPANIES}`,
+    type: PERMISSIONS.COMPANY_LIST,
+  },
+  {
+    id: '6',
+    name: 'Insurance Carriers',
+    icon: ShieldCheckIcon,
+    href: `/${ROUTES.INSURANCE_CARRIERS}`,
+    type: PERMISSIONS.INSURANCE_CARRIERS,
+  },
+  {
+    id: '7',
+    name: 'Customers',
+    icon: UserGroupIcon,
+    href: `/${ROUTES.CUSTOMERS}`,
+    type: PERMISSIONS.CUSTOMER_LIST,
+  },
+  {
+    id: '8',
+    name: 'Imports',
+    icon: ClipboardDocumentCheckIcon,
+    href: `/${ROUTES.IMPORTS}`,
+    type: PERMISSIONS.IMPORTS,
+  },
+  {
+    id: '9',
+    name: 'Notes',
+    icon: CalendarDaysIcon,
+    href: `/${ROUTES.NOTES}`,
+    type: PERMISSIONS.NOTES,
+  },
+  {
+    id: '10',
+    name: 'Documents',
+    icon: DocumentTextIcon,
+    href: `/${ROUTES.DOCUMENTS}`,
+    type: PERMISSIONS.DOCUMENTS,
+  },
+  {
+    id: '11',
+    name: 'Company settings',
+    icon: Cog8ToothIcon,
+    href: '#',
+    type: PERMISSIONS.COMPANY_SETTINGS,
+    options: [
+      {
+        id: '11.1',
+        name: 'Profile',
+        href: `/${ROUTES.PROFILE}`,
+        type: PERMISSIONS.COMPANY,
+      },
+      {
+        id: '11.2',
+        name: 'Members',
+        href: `/${ROUTES.MEMBERS}`,
+        type: PERMISSIONS.USER_LIST,
+      },
+      {
+        id: '11.3',
+        name: 'Tax rates',
+        href: `/${ROUTES.TAX_RATES}`,
+        type: PERMISSIONS.TAX_RATES,
+        hide: !process.env.NX_ALFA_VERSION,
+      },
+      {
+        id: '11.4',
+        name: 'Membership & billing',
+        href: `/${ROUTES.MEMBERSHIP}`,
+        type: PERMISSIONS.MEMBERSHIP_BILLING,
+        hide: !process.env.NX_ALFA_VERSION,
+      },
+      {
+        id: '11.5',
+        name: 'Email templates',
+        href: `/${ROUTES.EMAIL_TEMPLATES}`,
+        type: PERMISSIONS.EMAIL_TEMPLATES,
+      },
+    ],
+  },
+  {
+    id: '12',
+    name: 'divider',
+    type: LAYOUT_ELEMENT_TYPE.DIVIDER,
+    href: '',
+  },
+  {
+    id: '13',
+    name: 'Check algorithm',
+    icon: CheckCircleIcon,
+    href: `/${ROUTES.ALGORITHM_ACCURACY}`,
+    type: PERMISSIONS.ALGORITHM_ACCURACY,
+  },
+];

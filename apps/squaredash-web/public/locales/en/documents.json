@@ -1,0 +1,12 @@
+{
+    "documents":"Documents",
+    "search": "Search by document name",
+    "upload_document": "Upload document",
+    "document_name": "Document name",
+    "file_size": "File size",
+    "rename_document":"Rename document",
+    "save":"Save",
+    "cancel":"Cancel",
+    "delete_document":"Delete this document?",
+    "delete":"Delete"
+}

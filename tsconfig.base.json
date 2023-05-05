@@ -1,0 +1,136 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2021",
+    "module": "esnext",
+    "lib": ["es2021", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "paths": {
+      "@squaredash/address": ["libs/address/src/index.ts"],
+      "@squaredash/auth": ["libs/auth/src/index.ts"],
+      "@squaredash/change-email-request": [
+        "libs/change-email-request/src/index.ts"
+      ],
+      "@squaredash/company": ["libs/company/src/index.ts"],
+      "@squaredash/crud/accuracy-check": [
+        "libs/crud/accuracy-check/src/index.ts"
+      ],
+      "@squaredash/crud/change-email-log": [
+        "libs/crud/change-email-log/src/index.ts"
+      ],
+      "@squaredash/crud/claim-item": ["libs/crud/claim-item/src/index.ts"],
+      "@squaredash/crud/company": ["libs/crud/company/src/index.ts"],
+      "@squaredash/crud/customer": ["libs/crud/customer/src/index.ts"],
+      "@squaredash/crud/customer-draft": [
+        "libs/crud/customer-draft/src/index.ts"
+      ],
+      "@squaredash/crud/customer-user": [
+        "libs/crud/customer-user/src/index.ts"
+      ],
+      "@squaredash/crud/email-template": [
+        "libs/crud/email-template/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-carrier": [
+        "libs/crud/insurance-carrier/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-carrier-adjuster-draft": [
+        "libs/crud/insurance-carrier-adjuster-draft/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-carrier-draft": [
+        "libs/crud/insurance-carrier-draft/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-scope": [
+        "libs/crud/insurance-scope/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-scope-draft": [
+        "libs/crud/insurance-scope-draft/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-scope-group-draft": [
+        "libs/crud/insurance-scope-group-draft/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-scope-line-item": [
+        "libs/crud/insurance-scope-line-item/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-scope-line-item-draft": [
+        "libs/crud/insurance-scope-line-item-draft/src/index.ts"
+      ],
+      "@squaredash/crud/insurance-scope-validation-run": [
+        "libs/crud/insurance-scope-validation-run/src/index.ts"
+      ],
+      "@squaredash/crud/job": ["libs/crud/job/src/index.ts"],
+      "@squaredash/crud/job-contract": ["libs/crud/job-contract/src/index.ts"],
+      "@squaredash/crud/job-insurance-carrier": [
+        "libs/crud/job-insurance-carrier/src/index.ts"
+      ],
+      "@squaredash/crud/job-line-item": [
+        "libs/crud/job-line-item/src/index.ts"
+      ],
+      "@squaredash/crud/job-line-items-group": [
+        "libs/crud/job-line-items-group/src/index.ts"
+      ],
+      "@squaredash/crud/token": ["libs/crud/token/src/index.ts"],
+      "@squaredash/crud/unit-of-measurement": [
+        "libs/crud/unit-of-measurement/src/index.ts"
+      ],
+      "@squaredash/crud/user": ["libs/crud/user/src/index.ts"],
+      "@squaredash/crud/user-change-log": [
+        "libs/crud/user-change-log/src/index.ts"
+      ],
+      "@squaredash/crud/ws/channel": ["libs/crud/ws/channel/src/index.ts"],
+      "@squaredash/crud/ws/channel-to-connection": [
+        "libs/crud/ws/channel-to-connection/src/index.ts"
+      ],
+      "@squaredash/crud/ws/connection": [
+        "libs/crud/ws/connection/src/index.ts"
+      ],
+      "@squaredash/customer": ["libs/customer/src/index.ts"],
+      "@squaredash/customer-user": ["libs/customer-user/src/index.ts"],
+      "@squaredash/email": ["libs/email/src/index.ts"],
+      "@squaredash/file": ["libs/file/src/index.ts"],
+      "@squaredash/invitation": ["libs/invitation/src/index.ts"],
+      "@squaredash/job": ["libs/job/src/index.ts"],
+      "@squaredash/job-contract": ["libs/job-contract/src/index.ts"],
+      "@squaredash/job-history-event": ["libs/job-history-event/src/index.ts"],
+      "@squaredash/message-queue": ["libs/message-queue/src/index.ts"],
+      "@squaredash/phone-number": ["libs/phone-number/src/index.ts"],
+      "@squaredash/role": ["libs/role/src/index.ts"],
+      "@squaredash/scope-processor": ["libs/scope-processor/src/index.ts"],
+      "@squaredash/shared/apis/adobe-sdk": [
+        "libs/shared/apis/adobe-sdk/src/index.ts"
+      ],
+      "@squaredash/shared/apis/aws-sdk": [
+        "libs/shared/apis/aws-sdk/src/index.ts"
+      ],
+      "@squaredash/shared/apis/google-maps": [
+        "libs/shared/apis/google-maps/src/index.ts"
+      ],
+      "@squaredash/shared/apis/pwnedpasswords": [
+        "libs/shared/apis/pwnedpasswords/src/index.ts"
+      ],
+      "@squaredash/shared/constants": ["libs/shared/constants/src/index.ts"],
+      "@squaredash/shared/db": ["libs/shared/db/src/index.ts"],
+      "@squaredash/shared/interfaces": ["libs/shared/interfaces/src/index.ts"],
+      "@squaredash/shared/middlewares": [
+        "libs/shared/middlewares/src/index.ts"
+      ],
+      "@squaredash/shared/models": ["libs/shared/models/src/index.ts"],
+      "@squaredash/shared/redis": ["libs/shared/redis/src/index.ts"],
+      "@squaredash/shared/util": ["libs/shared/util/src/index.ts"],
+      "@squaredash/shared/validators": ["libs/shared/validators/src/index.ts"],
+      "@squaredash/user": ["libs/user/src/index.ts"],
+      "@squaredash/websockets": ["libs/websockets/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"],
+  "include": ["**/*.d.ts"]
+}

@@ -1,0 +1,8 @@
+export enum NUMBER_OF_EMPLOYEES {
+  ONLY_ME = 'only me',
+  TWO_TO_FIVE = '2-5',
+  SIX_TO_TEN = '6-10',
+  ELEVEN_TO_FIFTEEN = '11-15',
+  SIXTEEN_TO_TWENTY_FIVE = '16-25',
+  MORE_THAN_TWENTY_FIVE = '25+',
+}

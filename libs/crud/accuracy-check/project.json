@@ -1,0 +1,26 @@
+{
+  "name": "crud-accuracy-check",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/crud/accuracy-check/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/crud/accuracy-check",
+        "main": "libs/crud/accuracy-check/src/index.ts",
+        "tsConfig": "libs/crud/accuracy-check/tsconfig.lib.json",
+        "assets": ["libs/crud/accuracy-check/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/crud/accuracy-check/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

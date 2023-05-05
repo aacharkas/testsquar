@@ -1,0 +1,109 @@
+name: Deploy to AWS Lambda
+
+# Trigger only on a push to the aws-lambda branch
+on:
+  push:
+    branches:
+      - dev
+    paths:
+      - 'bin/**'
+
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  BUCKET: ${{ vars.S3_BUCKET_LAMBDA }}
+  SRC: "scripts"
+
+jobs:
+  deploy_functions:
+    name: Deploy functions to Lambda
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Clone the project into the build environment
+      - name: Clone Project
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
+
+      - name: rename script
+        run: mv bin/algo_results_parsing.py bin/main.py 
+
+      - name: Zip Project
+        uses: montudor/action-zip@v0.1.1
+        with:
+          args: zip -qq -j -r ./bundle.zip bin/main.py
+
+      # Deploy the function for JadeBots
+      - name: Deploy algo_parsing Function
+        uses: appleboy/lambda-action@master
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ env.AWS_REGION }}
+          function_name: algo_result_parsing
+          description: 'The function for parsing pdf'
+          runtime: python3.8
+          handler:  main.lambda_handler
+          zip_file: bundle.zip
+
+  deploy_layers:
+    name: Deploy Lambda Layers
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # Configure AWS credentials for upload
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    # Setup Python in the build environment
+    - name: Python Dependencies - Check Cache
+      id: python_cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('algo_result_parsing.py') }}-${{ hashFiles('dev-requirements.txt') }}
+
+    - name: Setup Python 3.8
+      if: steps.python_cache.outputs.cache-hit != 'true'
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    # Clone the project into the build environment
+    - name: Clone Project
+      if: steps.python_cache.outputs.cache-hit != 'true'
+      uses: actions/checkout@v2
+      with:
+        path: squaredash
+
+    - name: Install requirements and release to Layer
+      if: steps.python_cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir python
+        # Install libraries from requirements
+        ls squaredash/bin/
+        pip install -r squaredash/bin/requirements.txt -t python
+        # Zip the python folder
+        zip --quiet -r algo_result_parsing_layer.zip python
+        # Upload the libraries to a Lambda Layer
+        aws lambda publish-layer-version --layer-name algo_result_parsing_layer --description 'algo_result_parsing_layer' --zip-file fileb://algo_result_parsing_layer.zip --compatible-runtimes python3.6 python3.7 python3.8 python3.9
+ 
+  update_lambda_layers:
+    name: Update lambda layer versions
+    runs-on: ubuntu-latest
+    needs: [deploy_functions, deploy_layers]
+    steps:
+      - name: Update layers
+        uses: callummackenzie/latest-lambda-layer-action@v0.12
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ env.AWS_REGION }}
+          function_name: algo_result_parsing
