@@ -2,9 +2,9 @@ name: CLEAR OLD BRANCHES
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/2 * * * *"
 jobs:
-  cleaning:
+  cron:
     name: Cleanup old branches
     runs-on: ubuntu-latest
     steps:
