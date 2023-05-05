@@ -3,7 +3,7 @@ name: CLEAR OLD BRANCHES
 
 on:
   schedule:
-    - cron: '*/1 * * * *'
+  - cron: "*/1 * * * *"
 jobs:
   cron:
     name: Cleanup old branches
