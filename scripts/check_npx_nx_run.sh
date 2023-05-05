@@ -1,6 +1,4 @@
 #!/bin/bash
-#!!!!!!
-#@!@#
 for i in $(find ./apps/functions -name "project*" )
 do
 path_functions=$(echo $i | cut -d / -f'-5' | cut -d / -f'3 4 5' | sed 's/\//-/g')
